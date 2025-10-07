@@ -53,15 +53,7 @@ const NavContent = ({ className = '' }) => {
         />
       </Link>
       <div className="w-full h-[2px] bg-[var(--color-border-subtle,#303034)]" />
-      <NavLink
-        to="/home"
-        icon={MdDashboard}
-        isActive={activeLink === '/home'}
-        onClick={() => handleLinkClick('/home')}
-
-      >
-        <span className="md:inline text-gray-800 hover:text-gray-700">Market Watch</span>
-      </NavLink>
+      
 
       <div
         className={`hover:text-slate-800 cursor-pointer flex flex-col gap-2 duration-500 p-2 rounded-md w-full text-gray-800 ${
@@ -129,7 +121,7 @@ const NavContent = ({ className = '' }) => {
           <span className="md:inline">Broker</span>
         </div>
         {showDropdown2 && (
-        <div className='h-72 overflow-y-scroll'>
+        <div className='h-72 overflow-y-scroll scrollbar-hide'>
           <div className="pl-8 flex flex-col gap-2">
          
              <NavLink
@@ -140,115 +132,7 @@ const NavContent = ({ className = '' }) => {
               ANGEL
             </NavLink>
             
-             <NavLink
-              to="/Anandrathi"
-              isActive={location.pathname === '/Anandrathi'}
-              onClick={() => handleLinkClick('/Anandrathi')}
-            >
-            SYMPHONY XTS
-            </NavLink>
-              <NavLink
-              to="/Alice"
-              isActive={location.pathname === '/ViewAngel'}
-              onClick={() => handleLinkClick('/ViewAngel')}
-            >
-              ALICEBLUE
-            </NavLink>
-            <NavLink
-              to="/Viewdhan"
-              isActive={location.pathname === '/ViewAngel'}
-              onClick={() => handleLinkClick('/ViewAngel')}
-            >
-
-              DHAN
-            </NavLink>
-               <NavLink
-              to="/Flattrade1"
-              isActive={location.pathname === '/ViewAngel'}
-              onClick={() => handleLinkClick('/ViewAngel')}
-            >
-              FLATTRADE
-            </NavLink>
-
-             <NavLink
-              to="/Viewfyers"
-              isActive={location.pathname === '/ViewAngel'}
-              onClick={() => handleLinkClick('/ViewAngel')}
-            >
-              FYRES
-            </NavLink>
-                 <NavLink
-              to="/Viewgroww"
-              isActive={location.pathname === '/ViewAngel'}
-              onClick={() => handleLinkClick('/ViewAngel')}
-            >
-              GROWW
-            </NavLink>
-            
-                <NavLink
-              to="/hdfc1"
-              isActive={location.pathname === '/ViewAngel'}
-              onClick={() => handleLinkClick('/ViewAngel')}
-            >
-              HDFC
-            </NavLink>
-            
-            <NavLink
-              to="/Viewmotilal"
-              isActive={location.pathname === '/ViewAngel'}
-              onClick={() => handleLinkClick('/ViewAngel')}
-            >
-              
-              MOTILAL
-            </NavLink>
-            
-                    <NavLink
-              to="/samco1"
-              isActive={location.pathname === '/ViewAngel'}
-              onClick={() => handleLinkClick('/ViewAngel')}
-            >
-              SAMCO
-            </NavLink>
-
-            
-
-           
-
-
-           <NavLink
-              to="/ViewBroker"
-              isActive={location.pathname === '/ViewBroker'}
-              onClick={() => handleLinkClick('/ViewBroker')}
-            >
-              SHOONYA
-            </NavLink>
-
-             <NavLink
-              to="/Stoxkart1"
-              isActive={location.pathname === '/ViewAngel'}
-              onClick={() => handleLinkClick('/ViewAngel')}
-            >
-              STOXKART
-            </NavLink>  
-            
-          
-
-           
-            <NavLink
-              to="/Upstox"
-              isActive={location.pathname === '/ViewAngel'}
-              onClick={() => handleLinkClick('/ViewAngel')}
-            >
-              UPSTOX
-            </NavLink>
-
-            <NavLink
-              to="/Zerodha1"
-              isActive={location.pathname === '/ViewAngel'}
-              onClick={() => handleLinkClick('/ViewAngel')}
-            >
-              ZERODHA
-            </NavLink>
+             
 
             
 

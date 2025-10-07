@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { handleexchangerequest } from '../utility/Api';
 import { RefreshCcw } from 'lucide-react';
 
-// import { DownloadCSVFromJSON } from '../utility/downloadcsv';
+import { DownloadCSVFromJSON } from '../utility/downloadcsv';
 const Funds = () => {
   const [loading, setLoading] = useState(false);
   const [tableDatafetch, setTableDatafetch] = useState([]);

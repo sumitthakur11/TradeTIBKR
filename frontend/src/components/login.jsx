@@ -85,7 +85,7 @@ useEffect( () => {
 
            
 
-      history('/home');
+      history('/OrderPunch');
 
       
     } catch (error) {
