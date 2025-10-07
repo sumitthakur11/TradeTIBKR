@@ -1,0 +1,124 @@
+
+> new_dash@0.0.0 dev
+> vite --host
+
+
+  VITE v6.3.5  ready in 403 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: http://172.31.46.6:5173/
+[vite:css][postcss] @import must precede all other statements (besides @charset or empty @layer)
+2  |  @tailwind components;
+3  |  @tailwind utilities;
+4  |  @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5  |  
+6  |  
+11:53:46 AM [vite] (client) hmr update /src/components/login.jsx, /src/index.css, /src/utility/Api.jsx
+[vite:css][postcss] @import must precede all other statements (besides @charset or empty @layer)
+2  |  @tailwind components;
+3  |  @tailwind utilities;
+4  |  @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5  |  
+6  |  
+11:53:46 AM [vite] (client) hmr invalidate /src/utility/Api.jsx Could not Fast Refresh ("handleexchangerequest" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+11:53:46 AM [vite] (client) hmr update /src/components/Dashboard.jsx, /src/index.css
+[vite:css][postcss] @import must precede all other statements (besides @charset or empty @layer)
+2  |  @tailwind components;
+3  |  @tailwind utilities;
+4  |  @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5  |  
+6  |  
+
+> new_dash@0.0.0 dev
+> vite --host
+
+
+  VITE v6.3.5  ready in 410 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: http://172.31.46.6:5173/
+[vite:css][postcss] @import must precede all other statements (besides @charset or empty @layer)
+2  |  @tailwind components;
+3  |  @tailwind utilities;
+4  |  @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5  |  
+6  |  
+5:46:20 PM [vite] (client) hmr update /src/components/Dashboard.jsx, /src/index.css
+5:46:20 PM [vite] (client) hmr update /src/components/Dashboard.jsx, /src/index.css
+5:46:21 PM [vite] (client) hmr update /src/components/Dashboard.jsx, /src/index.css
+[vite:css][postcss] @import must precede all other statements (besides @charset or empty @layer)
+2  |  @tailwind components;
+3  |  @tailwind utilities;
+4  |  @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5  |  
+6  |  
+5:46:21 PM [vite] (client) hmr update /src/components/Dashboard.jsx, /src/index.css
+[vite:css][postcss] @import must precede all other statements (besides @charset or empty @layer)
+2  |  @tailwind components;
+3  |  @tailwind utilities;
+4  |  @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5  |  
+6  |  
+5:46:37 PM [vite] (client) hmr update /src/components/Dashboard.jsx, /src/index.css
+5:46:37 PM [vite] (client) hmr update /src/components/Dashboard.jsx, /src/index.css
+[vite:css][postcss] @import must precede all other statements (besides @charset or empty @layer)
+2  |  @tailwind components;
+3  |  @tailwind utilities;
+4  |  @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5  |  
+6  |  
+
+> new_dash@0.0.0 dev
+> vite --host
+
+
+  VITE v6.3.5  ready in 406 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: http://172.31.46.6:5173/
+[vite:css][postcss] @import must precede all other statements (besides @charset or empty @layer)
+2  |  @tailwind components;
+3  |  @tailwind utilities;
+4  |  @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5  |  
+6  |  
+
+> new_dash@0.0.0 dev
+> vite --host
+
+
+  VITE v6.3.5  ready in 807 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: http://172.31.46.6:5173/
+[vite:css][postcss] @import must precede all other statements (besides @charset or empty @layer)
+2  |  @tailwind components;
+3  |  @tailwind utilities;
+4  |  @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5  |  
+6  |  
+
+> new_dash@0.0.0 dev
+> vite --host
+
+
+  VITE v6.3.5  ready in 321 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: http://172.31.46.6:5173/
+[vite:css][postcss] @import must precede all other statements (besides @charset or empty @layer)
+2  |  @tailwind components;
+3  |  @tailwind utilities;
+4  |  @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200..800&display=swap');
+   |  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5  |  
+6  |  
