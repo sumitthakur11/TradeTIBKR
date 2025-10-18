@@ -1097,7 +1097,7 @@ def verify_account_token(accountnumber, auth_token):
     
     try:
         if not accountnumber or not auth_token:
-            return False, None, "Missing accountnumber or auth_token"
+            return False, None, "Missing accountnumber or w"
 
         broker = md.Broker.objects.filter(
             accountnumber=accountnumber,

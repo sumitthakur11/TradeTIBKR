@@ -14,7 +14,7 @@ import {
  import {handleexchangerequest}  from '../utility/Api'
 import { Type } from "lucide-react";
 const Angel = () => {
-  const [brokerName, setBrokerName] = useState('ANGEL');
+  const [brokerName, setBrokerName] = useState('IBKR');
   const [apikey, setapikey] = useState("");
   const [secretkey, setsecretkey] = useState("");
   const [AuthToken, setAuthToken] = useState("");
@@ -191,48 +191,6 @@ const handlelogin = async (brokerid) => {
                   />
                 </div>
 
-        <div className="flex items-center gap-4">
-          <Label htmlFor="api-key" className="w-1/3 text-lg text-gray-700">
-            API Key
-          </Label>
-          <Input
-            id="api-key"
-            type="text"
-            placeholder="Enter API key"
-            value={apikey}
-            onChange={(e) => setapikey(e.target.value)}
-            className="w-2/3 p-2 border border-gray-300 rounded-md"
-          />
-        </div>
-        {/* Auth Token */}
-        <div className="flex items-center gap-4">
-          <Label htmlFor="auth-token" className="w-1/3 text-lg text-gray-700">
-            Auth Token
-          </Label>
-          <Input
-            id="auth-token"
-            type="text"
-            placeholder="Enter Auth Token"
-            value={AuthToken}
-            onChange={(e) => setAuthToken(e.target.value)}
-            className="w-2/3 p-2 border border-gray-300 rounded-md"
-          />
-        </div>
-
-        {/* Vendor Code */}
-        <div className="flex items-center gap-4">
-          <Label htmlFor="vendor-code" className="w-1/3 text-lg text-gray-700">
-            Secret Key
-          </Label>
-          <Input
-            id="vendor-code"
-            type="text"
-            placeholder="Enter Vendor Code"
-            value={secretkey    }
-            onChange={(e) => setsecretkey(e.target.value)}
-            className="w-2/3 p-2 border border-gray-300 rounded-md"
-          />
-        </div>
 
         {/* Account Number */}
         <div className="flex items-center gap-4">
