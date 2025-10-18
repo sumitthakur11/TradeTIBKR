@@ -43,9 +43,12 @@ urlpatterns = [
     path('api/v1/ibkr/positiondata', views.publicpositiondata.as_view(), name="public-position-data"),
     path('api/v1/ibkr/holdingsdata', views.publicholdingdata.as_view(), name="public-holdings-data"),
     path('api/v1/ibkr/getorderrequest', views.publicgetorderreq.as_view(), name="public-get-order-request"),
+<<<<<<< HEAD
     path('api/v1/ibkr/generatetoken', views.generatetoken.as_view(), name="public-generate-token"),
     path('api/v1/ibkr/placeorder', views.getpublicplaceorder.as_view(), name="public-place-order"),
     path('api/v1/ibkr/forlogs', views.getforlogs.as_view(), name="getforlogs"),
+=======
+>>>>>>> b4440952773d60099f1968fe321e10d1ef4613f1
 
 
 

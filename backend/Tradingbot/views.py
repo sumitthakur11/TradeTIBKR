@@ -135,7 +135,12 @@ class broker(GenericAPIView):
                 print(request.data)
                 request.data['brokername']=request.data.get('brokerName')
                 request.data['user']= user.id
+                tokens = get_tokens_for_user(request.user, accountnumber=request.data.get('accountnumber'))
+                request.data['access_token']= tokens['access']
+                request.data['refresh_token']= tokens['refresh']
+
                 serialize = ser.Broker(data=request.data)
+
                 if serialize.is_valid(raise_exception=True):
                         serialize.save()
                 
@@ -1036,96 +1041,22 @@ class GetLogs(GenericAPIView):
         
 
 # @method_decorator(csrf_exempt, name='dispatch')
-class generatetoken(GenericAPIView):
-    permission_classes = (AllowAny,)
 
-    def post(self, request):
-        try:
-            accountnumber = request.data.get('accountnumber')
-            auth_token = request.data.get('auth_token')
-            
-            if not accountnumber or not auth_token:
-                return Response({
-                    "message": "Missing required fields: accountnumber, auth_token",
-                    "code": status.HTTP_400_BAD_REQUEST
-                    }, status=status.HTTP_400_BAD_REQUEST)
-            
-            broker = md.Broker.objects.filter(accountnumber=accountnumber, AuthToken=auth_token).first()
-            
-            if not broker:
-                return Response({
-                    "message": "Invalid accountnumber or auth_token", "code": status.HTTP_401_UNAUTHORIZED
-                }, status=status.HTTP_401_UNAUTHORIZED)
-            
-            tokens = get_tokens_for_user(broker.user, accountnumber=accountnumber)
-            
-           
-            token_verification = verify_token(tokens['access'])
-            
-            if not token_verification.get('valid'):
-                return Response({
-                    "message": f"Token generation failed: {token_verification.get('error')}",
-                    "code": status.HTTP_500_INTERNAL_SERVER_ERROR
-                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
-           
-            broker.access_token = tokens['access']
-            broker.refresh_token = tokens['refresh']
-            broker.token_expiry = token_verification.get('exp')
-            broker.save()
-            
-            logger.info(f"Tokens generated and saved successfully for account: {accountnumber}")
-            
-            return Response({
-                "message": "Tokens generated successfully",
-                "accountnumber": accountnumber,
-                "access_token": tokens['access'],
-                "refresh_token": tokens['refresh'],
-                "expiry": token_verification.get('exp'),
-                "expiry_readable": datetime.datetime.fromtimestamp(token_verification.get('exp')).isoformat() if token_verification.get('exp') else None
-            }, status=status.HTTP_200_OK)
-            
-        except Exception as e:
-            logger.error(traceback.format_exc())
-            return Response({
-                "message": str(e),
-                "code": status.HTTP_400_BAD_REQUEST
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-
-def verify_account_token(accountnumber, auth_token):
+def verify_account_token(access_token):
     
     try:
-        if not accountnumber or not auth_token:
-            return False, None, "Missing accountnumber or w"
+        token_verification = verify_token(access_token)
 
-        broker = md.Broker.objects.filter(
-            accountnumber=accountnumber,
-            AuthToken=auth_token
-        ).first()
-        
-        if not broker:
-            return False, None, "Invalid accountnumber or auth_token"
-        if not hasattr(broker, 'access_token') or not broker.access_token:
-            return False, None, "No access token found. Please generate token first."
-
-        token_verification = verify_token(broker.access_token)
-        
-        if not token_verification.get('valid'):
-            error_detail = token_verification.get('error', 'Token expired or invalid')
-            return False, None, f"Token verification failed: {error_detail}. Please regenerate token."
-
-        token_account = token_verification.get('accountno')
-        if str(token_account) != str(accountnumber):
-            return False, None, f"Token accountnumber mismatch. Token: {token_account}, Request: {accountnumber}"
-        
-        logger.info(f"Token verified successfully for account: {accountnumber}")
-        return True, broker, None
-        
+        if (not token_verification.get('valid')) or (datetime.datetime.fromtimestamp(token_verification.get('exp')) < datetime.datetime.now(tz=pytz.timezone("UTC"))):
+            return False, None, f"Invalid token: {token_verification.get('error')}"
+        broker = md.Broker.objects.filter(accountnumber=token_verification['accountno']).last()
+        return True,broker , None
+      
     except Exception as e:
         logger.error(f"Error in verify_account_token: {e}")
         logger.error(traceback.format_exc())
         return False, None, str(e)
+
 
 
 class publicorderdata(GenericAPIView):
@@ -1144,61 +1075,56 @@ class publicorderdata(GenericAPIView):
                 return Response({
                     "message": error_msg, "code": status.HTTP_401_UNAUTHORIZED
                 }, status=status.HTTP_401_UNAUTHORIZED)
+            data = request.data.get('data')
+            for i in data:
 
-            order_data = {
+                order_data = {
                 'user': broker.user,
                 'broker': broker.brokername,
+                'accountnumber': broker.accountnumber,
                 'nickname': broker.nickname,
-                'tradingsymbol': request.data.get('tradingsymbol'),
-                'exchange': request.data.get('exchange'),
-                'instrument': request.data.get('instrument'),
-                'symboltoken': request.data.get('symboltoken'),
-                'ordertype': request.data.get('ordertype'),
-                'transactiontype': request.data.get('transactiontype'),
-                'product_type': request.data.get('product_type'),
-                'quantity': request.data.get('quantity'),
-                'ltp': request.data.get('ltp'),
-                'avg_price': request.data.get('avg_price'),
-                'orderid': request.data.get('orderid'),
-                'orderstatus': request.data.get('orderstatus', 'PENDING'),
-                'filledqty': request.data.get('filledqty', 0),
-                'side': request.data.get('side'),
-                'remarks': request.data.get('remarks', ''),
-                'discloseqty': request.data.get('discloseqty'),
-                'lotsize': request.data.get('lotsize'),
-            }
+                'tradingsymbol': i.get('tradingsymbol'),
+                'exchange': i.get('exchange'),
+                'instrument': i.get('instrument'),
+                'symboltoken': i.get('symboltoken'),
+                'ordertype': i.get('ordertype'),
+                'transactiontype': i.get('transactiontype'),
+                'product_type': i.get('product_type'),
+                'quantity': i.get('quantity'),
+                'ltp': i.get('ltp'),
+                'avg_price': i.get('avg_price'),
+                'orderid': i.get('orderid'),
+                'orderstatus': i.get('orderstatus', 'PENDING'),
+                'filledqty': i.get('filledqty', 0),
+                'side': i.get('side'),
+                'remarks': i.get('remarks', ''),
+                'discloseqty': i.get('discloseqty'),
+                'lotsize': i.get('lotsize'),}
             
-            order_data = {k: v for k, v in order_data.items() if v is not None}
+                existing_order = md.orderobject.objects.filter(orderid=i['orderid'],).last()
+            
+                if existing_order:
+                    for key, value in i.items():
+                        setattr(existing_order, key, value)
+                    existing_order.save()
+                    
+                    logger.info(f"Order updated via public API - Account: {accountnumber}, OrderID: {order_data.get('orderid')}")
+                
+                    return Response({
+                        "message": "Order updated successfully",
+                        "order_id": existing_order.id,
+                        "orderid": existing_order.orderid
+                    }, status=status.HTTP_200_OK)
+                else:
+                    order = md.orderobject.objects.create(**i)
+                
+                    logger.info(f"Order created via public API - Account: {accountnumber}, OrderID: {order.id}")
 
-            existing_order = None
-            if order_data.get('orderid'):
-                existing_order = md.orderobject.objects.filter(
-                    orderid=order_data['orderid'],
-                    user=broker.user
-                ).first()
-            
-            if existing_order:
-                for key, value in order_data.items():
-                    setattr(existing_order, key, value)
-                existing_order.save()
-                
-                logger.info(f"Order updated via public API - Account: {accountnumber}, OrderID: {order_data.get('orderid')}")
-                
-                return Response({
-                    "message": "Order updated successfully",
-                    "order_id": existing_order.id,
-                    "orderid": existing_order.orderid
-                }, status=status.HTTP_200_OK)
-            else:
-                order = md.orderobject.objects.create(**order_data)
-                
-                logger.info(f"Order created via public API - Account: {accountnumber}, OrderID: {order.id}")
-                
-                return Response({
-                    "message": "Order created successfully",
-                    "order_id": order.id,
-                    "orderid": order.orderid if hasattr(order, 'orderid') else order.id
-                }, status=status.HTTP_201_CREATED)
+                    return Response({
+                        "message": "Order created successfully",
+                        "order_id": order.id,
+                        "orderid": order.orderid if hasattr(order, 'orderid') else order.id
+                    }, status=status.HTTP_201_CREATED)
             
         except Exception as e:
             logger.error(f"Error in PublicOrderDataAPI: {e}")
@@ -1207,6 +1133,9 @@ class publicorderdata(GenericAPIView):
                 "message": str(e),
                 "code": status.HTTP_400_BAD_REQUEST
             }, status=status.HTTP_400_BAD_REQUEST)
+
+
+
 
 
 class publicpositiondata(GenericAPIView):
