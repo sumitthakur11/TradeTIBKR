@@ -31,7 +31,7 @@ import time
 from .utility import get_tokens_for_user,verify_token
 # optional third-party SDK - if not installed, fall back to None and handle gracefully
 from .utility import IBKR
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse, Http404
 import locale
 from rest_framework.exceptions import ValidationError as DRFValidationError
 import traceback
@@ -558,11 +558,7 @@ class postionsobj(GenericAPIView):
                 data = list(md.orderobject.objects.filter(user=users.id,updated_at__range=(end,start)).values('id','nickname','tradingsymbol','transactiontype','quantity','filledqty','avg_price','orderstatus','remarks','ltp',
                                                                       'ordertype','exchange','orderid','updated_at','broker','side','instrument',))
                 
-                if not data:
-                    data = [
-                        {"id":1,"nickname":"DemoAcct","tradingsymbol":"AAPL","transactiontype":"BUY","quantity":10,"filledqty":10,"avg_price":150.0,"orderstatus":"Complete","remarks":"","ltp":155.25,"ordertype":"LIMIT","exchange":"NASDAQ","orderid":"DUMMY-1","updated_at":str(datetime.datetime.now()),"broker":"DEMO","side":"BUY","instrument":"EQ"},
-                        {"id":2,"nickname":"DemoAcct","tradingsymbol":"TSLA","transactiontype":"SELL","quantity":2,"filledqty":0,"avg_price":700.0,"orderstatus":"Open","remarks":"","ltp":710.0,"ordertype":"MARKET","exchange":"NASDAQ","orderid":"DUMMY-2","updated_at":str(datetime.datetime.now()),"broker":"DEMO","side":"SELL","instrument":"EQ"}
-                    ]
+                
 
             return Response({"message":data})
 
@@ -1406,6 +1402,91 @@ class publicgetorderreq(GenericAPIView):
         except Exception as e:
             logger.error(f"Error in PublicGetOrderRequestAPI: {e}")
             logger.error(traceback.format_exc())
+            return Response({
+                "message": str(e),
+                "code": status.HTTP_400_BAD_REQUEST
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+class getpublicplaceorder(GenericAPIView):
+    permissions_classes = (AllowAny,)
+    
+    def get(self, request):
+        try:
+            accountnumber = request.GET.get('accountnumber')
+            auth_token = request.GET.get('auth_token')
+
+            is_valid, broker, error_msg = verify_account_token(accountnumber, auth_token)
+            
+            if not is_valid:
+                logger.warning(f"Unauthorized place order request: {error_msg}")
+                return Response({
+                    "message": error_msg,
+                    "code": status.HTTP_401_UNAUTHORIZED
+                }, status=status.HTTP_401_UNAUTHORIZED)
+            
+            orders_qs = md.orderobject.objects.filter(
+                user=broker.user
+            ).order_by('-updated_at')
+            
+            orders = list(orders_qs.values(
+                'id', 'nickname', 'tradingsymbol', 'transactiontype', 
+                'quantity', 'filledqty', 'avg_price', 'orderstatus', 
+                'remarks', 'ltp', 'ordertype', 'exchange', 'orderid', 
+                'updated_at', 'broker', 'side', 'instrument'
+            ))
+            
+            logger.info(f"Place order data retrieved via public API - Account: {accountnumber}, Count: {len(orders)}")
+            
+            return Response({
+                "message": "Place order data retrieved successfully",
+                "accountnumber": accountnumber,
+                "count": len(orders),
+                "orders": orders
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            logger.error(f"Error in PublicPlaceOrderAPI: {e}")
+            logger.error(traceback.format_exc())
+            return Response({
+                "message": str(e),
+                "code": status.HTTP_400_BAD_REQUEST
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+            
+            
+            
+class getforlogs(GenericAPIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        try:
+            accountnumber = request.data.get('accountnumber')
+            auth_token = request.data.get('auth_token')
+
+            is_valid, broker, error_msg = verify_account_token(accountnumber, auth_token)
+            
+            if not is_valid:
+                print(f"Unauthorized get logs request: {error_msg}")
+                return Response({
+                    "message": error_msg,
+                    "code": status.HTTP_401_UNAUTHORIZED
+                }, status=status.HTTP_401_UNAUTHORIZED)
+            
+            if not os.path.exists(logpath):
+                print(f"Log file not found for account: {accountnumber}")
+                return Response({"message": "Log file not found"}, status=status.HTTP_404_NOT_FOUND)
+            try:
+                response = FileResponse(open(logpath, 'rb'), content_type='text/plain')
+                
+                response['Content-Disposition'] = f'attachment; filename="logs_{accountnumber}.log"'
+                return response
+            except Exception as e:
+                print(f"Error streaming log file: {e}")
+                return Response({"message": "Error reading log file"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+        except Exception as e:
+            print(f"Error in PublicGetLogsAPI: {e}")
+            print(traceback.format_exc())
             return Response({
                 "message": str(e),
                 "code": status.HTTP_400_BAD_REQUEST
