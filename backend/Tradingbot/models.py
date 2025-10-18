@@ -46,6 +46,8 @@ class Broker(models.Model):
     nickname= models.CharField(null=True,blank=True,default=None,max_length=100)
     funds= models.CharField(null=True,blank=True,default=None,max_length=100)
     url = models.CharField(null=True,blank=True,default=None,max_length=1000)
+    refresh_token= models.CharField(null=True,blank=True,default=None,max_length=5000)
+    access_token= models.CharField(null=True,blank=True,default=None,max_length=5000)
 
 
     
@@ -174,3 +176,34 @@ class allholding(models.Model):
     
 class contact(models.Model):
     pass
+
+
+class LogEntry(models.Model):
+    SEVERITY_CHOICES = [
+        ('DEBUG', 'DEBUG'),
+        ('INFO', 'INFO'),
+        ('WARNING', 'WARNING'),
+        ('ERROR', 'ERROR'),
+        ('CRITICAL', 'CRITICAL'),
+    ]
+
+    TYPE_CHOICES = [
+        ('SYSTEM', 'System'),
+        ('USER', 'User'),
+        ('TRADE', 'Trade'),
+        ('API', 'API'),
+    ]
+
+    
+    updated_at = models.DateTimeField(auto_now_add=True)
+    type = models.CharField(max_length=50, choices=TYPE_CHOICES, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    severity = models.CharField(max_length=20, choices=SEVERITY_CHOICES, default='INFO')
+    accountnumber = models.CharField(max_length=100, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-updated_at']
+
+    def __str__(self):
+        return f"[{self.severity}] {self.type or ''} - {self.accountnumber or ''}"
+

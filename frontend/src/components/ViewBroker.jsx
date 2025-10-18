@@ -13,7 +13,7 @@ import {
 
  import {handleexchangerequest}  from '../utility/Api'
 const ViewBroker = () => {
-  const [brokerName, setBrokerName] = useState('SHOONYA');
+  const [brokerName, setBrokerName] = useState('IBKR');
   const [apikey, setapikey] = useState("");
   const [secretkey, setsecretkey] = useState("");
   const [AuthToken, setAuthToken] = useState("");
@@ -38,7 +38,7 @@ const ViewBroker = () => {
   const fetchaccountlist = async () => {
     const type = "GET";
     const endpoint = "loadaccount";
-    const payload = "broker=SHOONYA";
+    const payload = "broker=IBKR";
     setLoading(true); // Set loading to true before fetching data
     handleexchangerequest(type, payload, endpoint, false)
       .then((response) => {

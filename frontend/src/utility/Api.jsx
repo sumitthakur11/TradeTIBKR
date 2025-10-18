@@ -54,7 +54,7 @@ export const handleexchangerequest = async (type, payload, endpoint,okalert) => 
         body: payload,
       });
       if (!response.ok) {
-        alert('something went wrong')
+        alert('something went wrong hii 2')
 
         throw new Error("Login failed");
       }
@@ -78,7 +78,7 @@ if (okalert){
         body: payload,
       });
       if (!response.ok) {
-        alert('something went wrong')
+        alert('something went wrong hii1')
 
         throw new Error("Login failed");
       }
@@ -134,7 +134,7 @@ if (okalert){
         }
       );
       if (!response.ok) {
-        alert('something went wrong')
+        alert('something went wrong hii 4' )
 
         throw new Error("Login failed");
       }

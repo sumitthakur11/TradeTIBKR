@@ -122,34 +122,12 @@ const OrderPunch = () => {
   }, [passedState]);
 
 
-  const dummyLogs = [
-  { id: 1, message: 'User logged in successfully', timestamp: '2025-05-13 19:45:32' },
-  { id: 2, message: 'API request failed: Invalid token', timestamp: '2025-05-13 19:46:10' },
-  { id: 3, message: 'Database connection established', timestamp: '2025-05-13 19:46:45' },
-  { id: 4, message: 'File uploaded to server', timestamp: '2025-05-13 19:47:22' },
-  { id: 5, message: 'User updated profile', timestamp: '2025-05-13 19:48:01' },
-  { id: 6, message: 'Scheduled task started', timestamp: '2025-05-13 19:49:15' },
-  { id: 7, message: 'Payment processed successfully', timestamp: '2025-05-13 19:50:00' },
-];
-
-    const frameworks = [
-  { value: "react", label: "React", icon: Code },
-  { value: "next", label: "Next.js", icon: Zap },
-  { value: "vue", label: "Vue", icon: Laptop },
-  { value: "nuxt", label: "Nuxt.js", icon: Cloud },
-  { value: "svelte", label: "Svelte", icon: Palette },
-  { value: "angular", label: "Angular", icon: Settings },
-  { value: "solid", label: "Solid", icon: Database },
-  { value: "ember", label: "Ember", icon: HomeIcon },
-  { value: "alpine", label: "Alpine", icon: Lock },
-]
-
-
  const fetchBrokers = async () => {
         try {
-      const response = await handleexchangerequest("GET", 'Broker=all', "symbols",false); // Replace with your API endpoint
+      const response = await handleexchangerequest("GET", 'Broker=all', "symbols",false); 
       if (response) {
-        setBrokers(response); // Assuming response.data contains the broker list
+        console.log("#########", response)
+        setBrokers(response); 
       } else {
         console.error("Failed to fetch brokers");
       }
@@ -342,12 +320,10 @@ const OrderPunch = () => {
   
   const navigate = useNavigate();
  const handleLoginaccount = () => {
-    if (brokerName2 === "SHOONYA") {
+    if (brokerName2 === "ibkr") {
       navigate("/ViewBroker"); // Redirect to AddBroker page
     } 
-    if (brokerName2 === "ANGEL") {
-      navigate("/ViewAngel"); // Redirect to AddBroker page
-    }
+    
   };
 
   const handleReset = () => {
@@ -436,8 +412,8 @@ const OrderPunch = () => {
                         {loading ? "Loading brokers..." : "No brokers available"}
                       </SelectItem>
                     )} */}
-                    <SelectItem value="SHOONYA">SHOONYA</SelectItem>
-                    <SelectItem value="ANGEL">ANGEL</SelectItem>
+                    <SelectItem value="ibkr">IBKR</SelectItem>
+                    
                     
                   </SelectContent>
                 </Select>
@@ -474,7 +450,7 @@ const OrderPunch = () => {
                 <Label className="text-lg text-slate-800 text-center">Accounts</Label>
                 <div className="flex items-center gap-2 justify-center w-full max-xs:flex-col">
 
-                  <Select onValueChange={(value) => {setBrokerName4(value),setIsAccountDisabled(true),setAccountname(''),fetchaccountlist(value)}}>
+                  {/* <Select onValueChange={(value) => {setBrokerName4(value),setIsAccountDisabled(true),setAccountname(''),fetchaccountlist(value)}}>
             <SelectTrigger className="w-full bg-blue-800 text-white hover:bg-blue-700">
               <SelectValue placeholder="All in Broker" />
             </SelectTrigger>
@@ -495,11 +471,11 @@ const OrderPunch = () => {
                 </SelectItem>
               )}
             </SelectContent>
-          </Select>
+          </Select> */}
             
 
        
-        <div className="space-y-4 w-full">
+        <div className="space-y-4 w-8/12">
           <MultiSelect
             options={accountlist.map((broker)=>{
               return {

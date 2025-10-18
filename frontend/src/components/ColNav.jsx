@@ -104,6 +104,13 @@ const NavContent = ({ className = '' }) => {
             >
               Holdings
             </NavLink>
+            <NavLink
+              to="/Logs"
+              isActive={location.pathname === '/Logs'}
+              onClick={() => handleLinkClick('/Logs')}
+            >
+              Logs
+            </NavLink>
             
           </div>
         )}

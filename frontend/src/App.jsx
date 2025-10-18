@@ -12,6 +12,7 @@ import ViewBroker from './components/ViewBroker';
 import Angel from './components/Angelbroker';
 import Funds from './components/Funds';
 import Holdings from './components/Holdings';
+import Logs from './components/Logstable';
 import NetPosition from './components/NetPosition';
 
 
@@ -34,6 +35,7 @@ function App() {
               <Route path="/Funds" element={<Funds />} />
               <Route path="/NetPosition" element={<NetPosition />} />
               <Route path="/Holdings" element={<Holdings />} />
+              <Route path="/Logs" element={<Logs />} />
               
             
             {/* <Route path="/Settings" element={<AddBroker />} /> */}

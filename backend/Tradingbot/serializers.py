@@ -55,3 +55,10 @@ class allholding(serializers.ModelSerializer):
         model = md.allholding
 
         fields = "__all__"
+
+
+
+class LogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = md.LogEntry
+        fields = '__all__'

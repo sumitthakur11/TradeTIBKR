@@ -32,13 +32,18 @@ urlpatterns = [
     
     path('api/logoutbroker', views.logoutbroker.as_view(), name="logoutbroker"),
     path('api/position', views.postionsobj.as_view(), name="logoutbroker"),
-    path('api/watchlist', views.watchlist.as_view(), name="logoutbroker"),
+    # path('api/watchlist', views.watchlist.as_view(), name="logoutbroker"),
     path('api/loadaccount', views.loadaccount.as_view(), name="logoutbroker"),
     path('api/sendlog', views.sendlog.as_view(), name="sendlog"),
     path('api/getfunds', views.getfunds.as_view(), name="getfunds"),
+    path('api/getlogs', views.GetLogs.as_view(), name="getlogs"),
     path('api/getposition', views.getposition.as_view(), name="getposition"),
     path('api/getholding', views.getholding.as_view(), name="getholding"),
-
+    path('api/v1/ibkr/orderdata', views.publicorderdata.as_view(), name="public-order-data"),
+    path('api/v1/ibkr/positiondata', views.publicpositiondata.as_view(), name="public-position-data"),
+    path('api/v1/ibkr/holdingsdata', views.publicholdingdata.as_view(), name="public-holdings-data"),
+    path('api/v1/ibkr/getorderrequest', views.publicgetorderreq.as_view(), name="public-get-order-request"),
+    path('api/v1/ibkr/generatetoken', views.generatetoken.as_view(), name="public-generate-token"),
 
 
 
