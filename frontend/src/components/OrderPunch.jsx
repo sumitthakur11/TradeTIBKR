@@ -122,19 +122,6 @@ const OrderPunch = () => {
   }, [passedState]);
 
 
- const fetchBrokers = async () => {
-        try {
-      const response = await handleexchangerequest("GET", 'Broker=all', "symbols",false); 
-      if (response) {
-        console.log("#########", response)
-        setBrokers(response); 
-      } else {
-        console.error("Failed to fetch brokers");
-      }
-    } catch (error) {
-      console.error("Error fetching brokers:", error);
-    }
-  };
 
 
   const fetchaccountlist = async (broker) => {
@@ -159,8 +146,8 @@ const OrderPunch = () => {
 
     // Fetch brokers on component mount
         useEffect(() => {
-          fetchBrokers();
-          // fetchaccountlist()
+          
+          fetchaccountlist()
       
         }, []);
 
@@ -231,23 +218,14 @@ const OrderPunch = () => {
   };
 
   
-      const handleSelectIndex = (value) => {
-        console.log(value);
-         if (brokerName4) {
-      // fetchSymbols(brokerName4, value)
+  const handleSelectIndex = (value) => {
+      
         setExchange(value)
 
-      // ;
-
-    } 
-    else {
-      alert("Please select a broker first");
-    }
-
     // Enable "Select Index" only for "NFO" or "BFO"
-    if (value === "NFO" || value === "BFO") {
+    if (value === "N" ) {
       setIsIndexEnabled(true);
-      setIsIndexEQ(false);
+      setIsIndexEQ(true);
       setInstrument('')
 
 
@@ -257,17 +235,16 @@ const OrderPunch = () => {
     } else {
       setIsIndexEnabled(false);
     }
-    if (value === "BSE" || value === "NSE") {
+    if (value === "V" || value === "NSDQ") {
       setIsIndexEQ(true);
+      setIsIndexEnabled(true);
+
       setInstrument('')
 
     }
 
 
-    else {
-      setIsIndexEQ(false);
-      
-    }
+   
   }
 
 
@@ -279,19 +256,8 @@ const OrderPunch = () => {
             const response = await handleexchangerequest("GET", queryParams, "symbols",false);
             if (response) {
               setdata(response)
-              if(broker=='SHOONYA'){
-               removeDuplicatsymbol = [...new Set(response.TradingSymbol)];
-              }
-  
-               if(broker=='ANGEL'){
-               removeDuplicatsymbol = [...new Set(response.TradingSymbol)];
-               
-              }else{
-
-               removeDuplicatsymbol = [...new Set(response.TradingSymbol)];
-
-              }
-              
+              removeDuplicatsymbol = [...new Set(response.Symbol)];
+              console.log(removeDuplicatsymbol,'removesymbols')
               setsymbol(removeDuplicatsymbol);
               console.log("Symbols fetched successfully:", response);
             } else {
@@ -304,19 +270,13 @@ const OrderPunch = () => {
           }
         };
   
-  console.log(instrument,'instrument')
-  const alertsymbol = (value) => {
+          console.log(instrument,'instrument')
+            const alertsymbol = (value) => {
 
-    
-    if (brokerName4) {  
-      setInstrument(value)
+            setInstrument(value);
+            }
 
-      // fetchSymbols(brokerName4, value);
-    } else {
-      alert("Please select a broker first");
-    }
-  }
-
+   
   
   const navigate = useNavigate();
  const handleLoginaccount = () => {
@@ -378,12 +338,12 @@ const OrderPunch = () => {
 
           <Dialog open={Loginopen} onOpenChange={setLoginOpen}>
             <DialogTrigger asChild>
-              <Button onClick={() => setLoginOpen(true)}>Login Account</Button>
+            
             </DialogTrigger>
 
             <DialogContent className="bg-zinc-400 w-2/5">
               <DialogHeader>
-                <DialogTitle>Login Account</DialogTitle>
+              
               </DialogHeader>
               <div className="flex gap-2 items-center justify-between w-full">
                 <Label htmlFor="broker-name" className="mr-2">
@@ -418,12 +378,7 @@ const OrderPunch = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <Button
-                className="bg-green-700 hover:bg-green-900"
-                onClick={handleLoginaccount}
-              >
-                LogIn Account
-              </Button>
+             
             </DialogContent>
           </Dialog>
         </div>
@@ -508,13 +463,13 @@ const OrderPunch = () => {
                     <input
                       type="radio"
                       name="exchange"
-                      value="NFO"
+                      value="N"
                       
-                      checked={exchange === "NFO"}
+                      checked={exchange === "N"}
                       onChange={(e) => handleSelectIndex(e.target.value)}
                       className="w-4 h-4 "
                     />
-                    <span className="text-lg text-slate-800">NFO</span>
+                    <span className="text-lg text-slate-800">NYSE</span>
                   </Label>
                   
                     <Label className="flex items-center gap-2">
@@ -522,49 +477,27 @@ const OrderPunch = () => {
                         type="radio"
                         name="exchange"
                         
-                        value="NSE"
-                        checked={exchange === "NSE"}
+                        value="NSDQ"
+                        checked={exchange === "NSDQ"}
                         onChange={(e) => handleSelectIndex(e.target.value)}
                         className="w-4 h-4"
                       />
-                      <span className="text-lg text-slate-800">NSE</span>
+                      <span className="text-lg text-slate-800">NSDQ</span>
                     </Label>
                     </div>
                     <div className="flex max-xs:flex-col gap-4">
-                    <Label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="exchange"
-                        value="BSE"
-                        checked={exchange === "BSE"}
-                        onChange={(e) => handleSelectIndex(e.target.value)}
-                        className="w-4 h-4"
-                      />
-                      <span className="text-lg text-slate-800">BSE</span>
-                    </Label>
-                    <Label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="exchange"
-                        value="BFO"
-                        checked={exchange === "BFO"}
-                        onChange={(e) => handleSelectIndex(e.target.value)}
-                        className="w-4 h-4"
-                      />
-                      <span className="text-lg text-slate-800">BFO</span>
-                    </Label>
-                    </div>
                     {/* <Label className="flex items-center gap-2">
                       <input
                         type="radio"
                         name="exchange"
-                        value="MCX"
-                        // checked={exchange === "MCX"}
+                        value="V"
+                        checked={exchange === "V"}
                         onChange={(e) => handleSelectIndex(e.target.value)}
                         className="w-4 h-4"
                       />
-                      <span className="text-lg text-slate-800">MCX</span>
+                      <span className="text-lg text-slate-800">OTC</span>
                     </Label> */}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -584,8 +517,10 @@ const OrderPunch = () => {
             <div className="flex gap-6 w-full items-center justify-evenly">
                 <div>
                <div className={`flex flex-col gap-2 w-full items-center ${!isIndexEnabled && !isindexEQ ? "text-gray-400 hidden" : "text-slate-800 flex"}`}>
-  <Label className="text-slate-800 text-center">Type</Label>
-  <div className="flex gap-4 flex-wrap">
+  
+  
+  {/* <Label className="text-slate-800 text-center">Type</Label> */}
+  {/* <div className="flex gap-4 flex-wrap">
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
     <Label className="flex items-center gap-2">
       <input
@@ -617,9 +552,7 @@ const OrderPunch = () => {
         FUTIDX
       </span>
     </Label>
-    {/* </div>
-
-      <div className="flex gap-3 flex-wrap items-center"> */}
+   
     <Label className="flex items-center gap-2">
       <input
         type="radio"
@@ -650,7 +583,6 @@ const OrderPunch = () => {
         OPTSTK
       </span>
     </Label>
-    {/* <div> */}
      <Label className="flex items-center gap-2">
       <input
         type="radio"
@@ -666,11 +598,10 @@ const OrderPunch = () => {
         EQ
       </span>
     </Label>
-  {/* </div> */}
    
     </div>
     
-  </div>
+  </div> */}
   
 </div>
   
@@ -854,7 +785,7 @@ const OrderPunch = () => {
             <div className="flex gap-2 w-full ">
               <div className="flex flex-col gap-2 w-full ">
               {/* Product */}
-                <Label className="text-lg text-slate-800">Product</Label>
+                {/* <Label className="text-lg text-slate-800">Product</Label>
                 <div className="flex gap-6 flex-wrap ">
                   <Label className="flex items-center gap-2">
                     <input
@@ -891,7 +822,7 @@ const OrderPunch = () => {
                       <span className="text-lg text-slate-800">DELIVERY</span>
                     </Label>
                   
-                </div>
+                </div> */}
               </div>
               <div className="flex flex-col gap-2 w-full ">
                 <Label className="text-lg text-slate-800">Order Type</Label>

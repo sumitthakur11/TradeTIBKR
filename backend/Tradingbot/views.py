@@ -31,7 +31,7 @@ import time
 from .utility import get_tokens_for_user,verify_token
 # optional third-party SDK - if not installed, fall back to None and handle gracefully
 from .utility import IBKR
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse, Http404
 import locale
 from rest_framework.exceptions import ValidationError as DRFValidationError
 import traceback
@@ -100,19 +100,8 @@ class broker(GenericAPIView):
     def get(self, request, *args, **kwargs):
         try:
             users = request.user
-            if request.GET.get('broker').lower()=='IBKR':
-                proj= md.Broker.objects.filter(user=users.id,brokername='IBKR').values('brokerid','nickname','Username','accountnumber','brokername','active','apikey','password',
-                                                                 'vendorcode','AuthToken')
-
-            elif request.GET.get('broker').lower()=='angel':
-                proj= md.Broker.objects.filter(user=users.id,brokername='ANGEL').values('brokerid','nickname','accountnumber','brokername','active','apikey','password','secretkey','AuthToken')
-            
-            else:
-                proj = []
-            if request.GET.get('account').lower()=='all':
-                proj= md.Broker.objects.filter(user=users.id,valid=True,brokername=request.GET.get('broker').upper()).values('brokerid','nickname','accountnumber','brokername')
-            
-
+            proj= md.Broker.objects.filter(user=users.id,brokername='IBKR').values('brokerid','nickname','accountnumber','access_token','refresh_token')
+            print(proj)
             
             return Response({"message":proj})
 
@@ -254,8 +243,58 @@ brokerlist=[
     
 ]
 
+import requests
+import pandas as pd
+import io
 
 
+def get_symbol_info(symbol, exchange, ETF='N'):
+            
+
+            url ='https://www.nasdaqtrader.com/dynamic/symdir/otherlisted.txt' if  exchange in ['N','A','V','M']  else 'https://www.nasdaqtrader.com/dynamic/symdir/nasdaqlisted.txt'
+            symbolinfolist=requests.get(url).text
+
+            symbolinfolist= pd.read_csv(io.StringIO(symbolinfolist),delimiter='|')
+            print(symbolinfolist.head())
+            print(symbolinfolist.columns)
+            if exchange in ['N','A','V','M']:
+                symbolinfolist= symbolinfolist.rename(columns={'ACT Symbol':'Symbol','Security Name':'Name','Exchange':'Exchange','ETF':'ETF','Lot Size':'LotSize','Test Issue':'TestIssue','NASDAQ Symbol':'NASDAQSymbol'})
+            else:
+                symbolinfolist= symbolinfolist.rename(columns={'Symbol':'Symbol','Security Name':'Name','Market Category':'Instrument','ETF':'ETF','Round Lot Size':'LotSize','Test Issue':'TestIssue'})
+                symbolinfolist['Exchange']=exchange
+                symbolinfolist['NASDAQSymbol']=symbolinfolist['Symbol']
+                print('smiles')
+
+            symbolinfolist=symbolinfolist[symbolinfolist['Symbol'] != '']
+            symbolinfolist=symbolinfolist.dropna(subset=[ 'ETF'])
+            print(symbolinfolist['ETF'].unique(),'ETF')
+            print(symbolinfolist['Exchange'].unique(),'instruments')
+
+
+            
+
+            symbolinfolist['Symbol'] = symbolinfolist['Symbol'].str.strip()
+            symbolinfolist = symbolinfolist.drop_duplicates(subset=['Symbol'], keep='first')
+            symbolinfolist=symbolinfolist.reset_index(drop=True)
+            symbbolinfo= symbolinfolist[(symbolinfolist['Exchange']== exchange) & (symbolinfolist['ETF']== ETF)]
+            print(symbbolinfo,'symbbolinfo')
+            print(symbolinfolist['Symbol'].unique(),'symbbolinfo')
+            print(symbol,'symbollllllllllllllllllllllllllllllllllllllllll')
+            symbbolinfo= symbbolinfo[symbbolinfo['Symbol'].str.contains(symbol, case=False, na=False)]
+            print(symbbolinfo,'symbollllllllllllllllllllllllllllllllllllllllll')
+            if symbbolinfo.empty:
+
+                symbbolinfo= symbbolinfo[symbbolinfo['NASDAQSymbol'].str.contains(symbol, case=False, na=False)]
+                print(symbbolinfo,'symbollllllllllllllllllllllllllllllllllllllllll')
+
+            if symbbolinfo.empty:
+                symbbolinfo= symbbolinfo[symbbolinfo['Name'].str.contains(symbol, case=False, na=False)]
+                print(symbbolinfo,'symbollllllllllllllllllllllllllllllllllllllllll')
+
+                
+
+
+            return symbbolinfo
 
 
 class Getsymbols(GenericAPIView):
@@ -266,6 +305,7 @@ class Getsymbols(GenericAPIView):
 
 
         try:
+            print(request.GET,'request.GET')
             users = request.user
             
             data = []
@@ -273,22 +313,12 @@ class Getsymbols(GenericAPIView):
             exchange = (request.GET.get('exchange') or '').upper()
             instrument = (request.GET.get('instrument') or '').upper()
             name = (request.GET.get('name') or '')
-            broker_param = (request.GET.get('Broker') or '').lower()
+            print(name,exchange)
+            datas = get_symbol_info(name,exchange)
+            print(datas,'datatatatatatatatata')
 
            
-            datas = []
-
-            if broker_param == 'ibkr':
-               
-                if IBKR:
-                    try:
-                        datas = IBKR.optionchain(name.upper(), exchange.upper(), instrument.upper())
-                        print("@@@@@@@@@@@", datas)
-                    except Exception as e:
-                        logger.error(f"IBKR.optionchain error: {e}")
-                        datas = []
-                else:
-                    datas = []
+           
 
             
             return Response({"message": datas}, status=status.HTTP_200_OK)
@@ -563,11 +593,7 @@ class postionsobj(GenericAPIView):
                 data = list(md.orderobject.objects.filter(user=users.id,updated_at__range=(end,start)).values('id','nickname','tradingsymbol','transactiontype','quantity','filledqty','avg_price','orderstatus','remarks','ltp',
                                                                       'ordertype','exchange','orderid','updated_at','broker','side','instrument',))
                 
-                if not data:
-                    data = [
-                        {"id":1,"nickname":"DemoAcct","tradingsymbol":"AAPL","transactiontype":"BUY","quantity":10,"filledqty":10,"avg_price":150.0,"orderstatus":"Complete","remarks":"","ltp":155.25,"ordertype":"LIMIT","exchange":"NASDAQ","orderid":"DUMMY-1","updated_at":str(datetime.datetime.now()),"broker":"DEMO","side":"BUY","instrument":"EQ"},
-                        {"id":2,"nickname":"DemoAcct","tradingsymbol":"TSLA","transactiontype":"SELL","quantity":2,"filledqty":0,"avg_price":700.0,"orderstatus":"Open","remarks":"","ltp":710.0,"ordertype":"MARKET","exchange":"NASDAQ","orderid":"DUMMY-2","updated_at":str(datetime.datetime.now()),"broker":"DEMO","side":"SELL","instrument":"EQ"}
-                    ]
+                
 
             return Response({"message":data})
 
@@ -657,29 +683,9 @@ class loadaccount(GenericAPIView):
 
             if broker_lc == 'all':
                 datas = brokerlist
-            elif broker_lc == 'ibkr':
-                datas = md.Broker.objects.filter(user=users.id,brokername='IBKR').values('valid','brokerid','nickname','brokername','accountnumber','apikey','secretkey','password','vendorcode','AuthToken','active')
-            elif broker_lc == 'angel':
-                datas = md.Broker.objects.filter(user=users.id,brokername='ANGEL').values('valid','brokerid','nickname','accountnumber','brokername','active','apikey','password','secretkey','AuthToken')
-            elif broker_lc == 'fyers':
-                datas = md.Broker.objects.filter(user=users.id,brokername='FYERS').values('valid','brokerid','nickname','accountnumber','secretkey','AuthToken','active')
-            elif broker_lc == 'motilal':
-                datas = md.Broker.objects.filter(user=users.id,brokername='MOTILAL').values('valid','brokerid','nickname','nickname','accountnumber','vendorcode','password','AuthToken','apikey','active')
-            elif broker_lc == 'groww':
-                datas = md.Broker.objects.filter(user=users.id,brokername='GROWW').values('valid','brokerid','nickname','apikey','secretkey','active')
-            elif broker_lc == 'dhan':
-                datas = md.Broker.objects.filter(user=users.id,brokername='DHAN').values('valid','brokerid','nickname','accountnumber','AuthToken','active','password')
-            elif broker_lc == 'upstox':
-                datas = md.Broker.objects.filter(user=users.id,brokername='UPSTOX').values('valid','brokerid','nickname','accountnumber','AuthToken','active','apikey','secretkey')
-            elif broker_up == 'ALICEBLUE':
-                datas = md.Broker.objects.filter(user=users.id,brokername='ALICEBLUE').values('valid','brokerid','nickname','accountnumber','active','apikey','AuthToken','secretkey','password')
-            elif broker_up in ('ZERODHA', 'STOXKART', 'FLATTRADE'):
-                datas = md.Broker.objects.filter(user=users.id,brokername=broker_up).values('valid','brokerid','nickname','accountnumber','active','AuthToken','apikey','secretkey','password')
-            elif broker_up in ('HDFC', 'SYMPHONY'):
-                datas = md.Broker.objects.filter(user=users.id,brokername=broker_up).values('valid','brokerid','nickname','url','accountnumber','active','AuthToken','apikey','secretkey')
-            elif broker_up == 'SAMCO':
-                datas = md.Broker.objects.filter(user=users.id,brokername=broker_up).values('valid','brokerid','nickname','accountnumber','active','password','secretkey')
-
+            else:
+                datas = md.Broker.objects.filter(user=users.id,brokername='IBKR').values('valid','brokerid','nickname','accountnumber','access_token','active')
+           
             # datas is always defined (possibly empty) at this point
             return Response({"message": datas})
 
@@ -1174,6 +1180,8 @@ class publicpositiondata(GenericAPIView):
                 'unrealised': request.data.get('unrealised', 0),
             }
 
+
+
             position_data = {k: v for k, v in position_data.items() if v is not None}
 
             existing_position = md.Allpositions.objects.filter(
@@ -1182,6 +1190,8 @@ class publicpositiondata(GenericAPIView):
                 tradingsymbol=position_data.get('tradingsymbol')
             ).first()
             
+
+
             if existing_position:
 
                 for key, value in position_data.items():
@@ -1340,3 +1350,87 @@ class publicgetorderreq(GenericAPIView):
                 "code": status.HTTP_400_BAD_REQUEST
             }, status=status.HTTP_400_BAD_REQUEST)
 
+class getpublicplaceorder(GenericAPIView):
+    permissions_classes = (AllowAny,)
+    
+    def get(self, request):
+        try:
+            accountnumber = request.GET.get('accountnumber')
+            auth_token = request.GET.get('auth_token')
+
+            is_valid, broker, error_msg = verify_account_token(accountnumber, auth_token)
+            
+            if not is_valid:
+                logger.warning(f"Unauthorized place order request: {error_msg}")
+                return Response({
+                    "message": error_msg,
+                    "code": status.HTTP_401_UNAUTHORIZED
+                }, status=status.HTTP_401_UNAUTHORIZED)
+            
+            orders_qs = md.orderobject.objects.filter(
+                user=broker.user
+            ).order_by('-updated_at')
+            
+            orders = list(orders_qs.values(
+                'id', 'nickname', 'tradingsymbol', 'transactiontype', 
+                'quantity', 'filledqty', 'avg_price', 'orderstatus', 
+                'remarks', 'ltp', 'ordertype', 'exchange', 'orderid', 
+                'updated_at', 'broker', 'side', 'instrument'
+            ))
+            
+            logger.info(f"Place order data retrieved via public API - Account: {accountnumber}, Count: {len(orders)}")
+            
+            return Response({
+                "message": "Place order data retrieved successfully",
+                "accountnumber": accountnumber,
+                "count": len(orders),
+                "orders": orders
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            logger.error(f"Error in PublicPlaceOrderAPI: {e}")
+            logger.error(traceback.format_exc())
+            return Response({
+                "message": str(e),
+                "code": status.HTTP_400_BAD_REQUEST
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+            
+            
+            
+class getforlogs(GenericAPIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        try:
+            accountnumber = request.data.get('accountnumber')
+            auth_token = request.data.get('auth_token')
+
+            is_valid, broker, error_msg = verify_account_token(accountnumber, auth_token)
+            
+            if not is_valid:
+                print(f"Unauthorized get logs request: {error_msg}")
+                return Response({
+                    "message": error_msg,
+                    "code": status.HTTP_401_UNAUTHORIZED
+                }, status=status.HTTP_401_UNAUTHORIZED)
+            
+            if not os.path.exists(logpath):
+                print(f"Log file not found for account: {accountnumber}")
+                return Response({"message": "Log file not found"}, status=status.HTTP_404_NOT_FOUND)
+            try:
+                response = FileResponse(open(logpath, 'rb'), content_type='text/plain')
+                
+                response['Content-Disposition'] = f'attachment; filename="logs_{accountnumber}.log"'
+                return response
+            except Exception as e:
+                print(f"Error streaming log file: {e}")
+                return Response({"message": "Error reading log file"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+        except Exception as e:
+            print(f"Error in PublicGetLogsAPI: {e}")
+            print(traceback.format_exc())
+            return Response({
+                "message": str(e),
+                "code": status.HTTP_400_BAD_REQUEST
+            }, status=status.HTTP_400_BAD_REQUEST)

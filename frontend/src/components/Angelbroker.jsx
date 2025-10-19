@@ -14,7 +14,7 @@ import {
  import {handleexchangerequest}  from '../utility/Api'
 import { Type } from "lucide-react";
 const Angel = () => {
-  const [brokerName, setBrokerName] = useState('ANGEL');
+  const [brokerName, setBrokerName] = useState('IBKR');
   const [apikey, setapikey] = useState("");
   const [secretkey, setsecretkey] = useState("");
   const [AuthToken, setAuthToken] = useState("");
@@ -191,48 +191,6 @@ const handlelogin = async (brokerid) => {
                   />
                 </div>
 
-        <div className="flex items-center gap-4">
-          <Label htmlFor="api-key" className="w-1/3 text-lg text-gray-700">
-            API Key
-          </Label>
-          <Input
-            id="api-key"
-            type="text"
-            placeholder="Enter API key"
-            value={apikey}
-            onChange={(e) => setapikey(e.target.value)}
-            className="w-2/3 p-2 border border-gray-300 rounded-md"
-          />
-        </div>
-        {/* Auth Token */}
-        <div className="flex items-center gap-4">
-          <Label htmlFor="auth-token" className="w-1/3 text-lg text-gray-700">
-            Auth Token
-          </Label>
-          <Input
-            id="auth-token"
-            type="text"
-            placeholder="Enter Auth Token"
-            value={AuthToken}
-            onChange={(e) => setAuthToken(e.target.value)}
-            className="w-2/3 p-2 border border-gray-300 rounded-md"
-          />
-        </div>
-
-        {/* Vendor Code */}
-        <div className="flex items-center gap-4">
-          <Label htmlFor="vendor-code" className="w-1/3 text-lg text-gray-700">
-            Secret Key
-          </Label>
-          <Input
-            id="vendor-code"
-            type="text"
-            placeholder="Enter Vendor Code"
-            value={secretkey    }
-            onChange={(e) => setsecretkey(e.target.value)}
-            className="w-2/3 p-2 border border-gray-300 rounded-md"
-          />
-        </div>
 
         {/* Account Number */}
         <div className="flex items-center gap-4">
@@ -250,7 +208,7 @@ const handlelogin = async (brokerid) => {
         </div>
 
         {/* Password */}
-        <div className="flex items-center gap-4">
+        {/* <div className="flex items-center gap-4">
           <Label htmlFor="password" className="w-1/3 text-lg text-gray-700">
             Password
           </Label>
@@ -262,7 +220,7 @@ const handlelogin = async (brokerid) => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-2/3 p-2 border border-gray-300 rounded-md"
           />
-        </div>
+        </div> */}
 
         {/* Submit Button */}
         <div className="flex justify-end">
@@ -286,7 +244,6 @@ const handlelogin = async (brokerid) => {
             <table className="min-w-full table-auto">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>
-                  <th className="px-6 py-3">Login</th>
 
                  {Object.keys(tableDatafetch[0])
                                   .filter((key) => key !== 'valid' && key !== 'active')
@@ -306,14 +263,7 @@ const handlelogin = async (brokerid) => {
                     key={index}
                     className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                   >
-                      <td className="px-6 py-4 text-center">
-                         <Button
-                        className={row.valid?"bg-green-600 text-white py-2 text-sm rounded-md hover:bg-blue-700":"bg-red-600 text-white py-2 text-sm rounded-md hover:bg-blue-700"}
-                        onClick={() => handlelogin(row.brokerid)}
-                      >
-                        Login
-                      </Button>
-                    </td>
+                    
                         {Object.entries(row)
       .filter(([key]) => key !== 'valid' && key !== 'active')
       .map(([key, value], idx) => (

@@ -3,7 +3,7 @@ from django.db import models
 
 
 brokerlist={
-    "ANGEL":"ANGEL",
+    "IBKR":"IBKR",
    
     
 }

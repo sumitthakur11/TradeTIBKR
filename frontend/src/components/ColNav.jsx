@@ -136,7 +136,7 @@ const NavContent = ({ className = '' }) => {
               isActive={location.pathname === '/ViewAngel'}
               onClick={() => handleLinkClick('/ViewAngel')}
             >
-              ANGEL
+              IBKR
             </NavLink>
             
              
