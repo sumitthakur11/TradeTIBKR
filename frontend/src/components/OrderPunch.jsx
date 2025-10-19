@@ -283,7 +283,7 @@ const OrderPunch = () => {
                removeDuplicatsymbol = [...new Set(response.TradingSymbol)];
               }
   
-               if(broker=='ANGEL'){
+               if(broker=='IBKR'){
                removeDuplicatsymbol = [...new Set(response.TradingSymbol)];
                
               }else{
@@ -346,7 +346,7 @@ const OrderPunch = () => {
   }
 
   const handlesetlotsize=(index)=>{
-    if (brokerName4==='ANGEL'){
+    if (brokerName4==='IBKR'){
       setlotsize(data.lotsize[index])
       settoken(data.token[index])
 

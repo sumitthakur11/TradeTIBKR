@@ -40,7 +40,7 @@ function App() {
             
             {/* <Route path="/Settings" element={<AddBroker />} /> */}
             <Route path="/ViewBroker" element={<ViewBroker defaultBrokerName="Shoonya" />} />
-            <Route path="/ViewAngel" element={<Angel />} />
+            <Route path="/ViewIBKR" element={<Angel />} />
     
 
 

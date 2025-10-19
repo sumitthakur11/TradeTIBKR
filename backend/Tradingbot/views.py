@@ -102,7 +102,7 @@ class broker(GenericAPIView):
             users = request.user
             if request.GET.get('broker').lower()=='IBKR':
                 proj= md.Broker.objects.filter(user=users.id,brokername='IBKR').values('brokerid','nickname','Username','accountnumber','brokername','active','apikey','password',
-                                                                 'vendorcode','AuthToken')
+                                                                 'AuthToken')
 
             elif request.GET.get('broker').lower()=='angel':
                 proj= md.Broker.objects.filter(user=users.id,brokername='ANGEL').values('brokerid','nickname','accountnumber','brokername','active','apikey','password','secretkey','AuthToken')
@@ -654,7 +654,7 @@ class loadaccount(GenericAPIView):
             if broker_lc == 'all':
                 datas = brokerlist
             elif broker_lc == 'ibkr':
-                datas = md.Broker.objects.filter(user=users.id,brokername='IBKR').values('valid','brokerid','nickname','brokername','accountnumber','apikey','secretkey','password','vendorcode','AuthToken','active')
+                datas = md.Broker.objects.filter(user=users.id,brokername='IBKR').values('valid','brokerid','nickname','brokername','accountnumber','apikey','secretkey','password','AuthToken','active')
             elif broker_lc == 'angel':
                 datas = md.Broker.objects.filter(user=users.id,brokername='ANGEL').values('valid','brokerid','nickname','accountnumber','brokername','active','apikey','password','secretkey','AuthToken')
             elif broker_lc == 'fyers':

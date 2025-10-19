@@ -132,11 +132,11 @@ const NavContent = ({ className = '' }) => {
           <div className="pl-8 flex flex-col gap-2">
          
              <NavLink
-              to="/ViewAngel"
-              isActive={location.pathname === '/ViewAngel'}
-              onClick={() => handleLinkClick('/ViewAngel')}
+              to="/ViewIBKR"
+              isActive={location.pathname === '/ViewIBKR'}
+              onClick={() => handleLinkClick('/ViewIBKR')}
             >
-              ANGEL
+              IBKR
             </NavLink>
             
              
