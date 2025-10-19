@@ -1076,9 +1076,9 @@ class publicorderdata(GenericAPIView):
     def post(self, request):
         try:
             accountnumber = request.data.get('accountnumber')
-            auth_token = request.data.get('auth_token')
+            # auth_token = request.data.get('auth_token')
   
-            is_valid, broker, error_msg = verify_account_token(accountnumber, auth_token)
+            is_valid, broker, error_msg = verify_account_token(accountnumber)
             
             if not is_valid:
                 logger.warning(f"Unauthorized order data request: {error_msg}")
@@ -1155,9 +1155,9 @@ class publicpositiondata(GenericAPIView):
     def post(self, request):
         try:
             accountnumber = request.data.get('accountnumber')
-            auth_token = request.data.get('auth_token')
+            # auth_token = request.data.get('auth_token')
 
-            is_valid, broker, error_msg = verify_account_token(accountnumber, auth_token)
+            is_valid, broker, error_msg = verify_account_token(accountnumber)
             
             if not is_valid:
                 logger.warning(f"Unauthorized position data request: {error_msg}")
@@ -1166,54 +1166,52 @@ class publicpositiondata(GenericAPIView):
                     "code": status.HTTP_401_UNAUTHORIZED
                 }, status=status.HTTP_401_UNAUTHORIZED)
             
+            data = request.data.get('data')
+            for i in data:
             # Extract position data
-            position_data = {
-                'user': broker.user,
-                'broker': broker.brokername,
-                'nickname': broker.nickname,
-                'tradingsymbol': request.data.get('tradingsymbol'),
-                'netqty': request.data.get('netqty', 0),
-                'buyavgprice': request.data.get('buyavgprice', 0),
-                'sellavgprice': request.data.get('sellavgprice', 0),
-                'ltp': request.data.get('ltp', 0),
-                'realised': request.data.get('realised', 0),
-                'unrealised': request.data.get('unrealised', 0),
-            }
+                position_data = {
+                    'user': broker.user,
+                    'broker': broker.brokername,
+                    'nickname': broker.nickname,
+                    'tradingsymbol': i.data.get('tradingsymbol'),
+                    'netqty': i.data.get('netqty', 0),
+                    'buyavgprice': i.data.get('buyavgprice', 0),
+                    'sellavgprice': i.data.get('sellavgprice', 0),
+                    'ltp': i.data.get('ltp', 0),
+                    'realised': i.data.get('realised', 0),
+                    'unrealised': i.data.get('unrealised', 0),
+                }
 
+            # position_data = {k: v for k, v in position_data.items() if v is not None}
 
-
-            position_data = {k: v for k, v in position_data.items() if v is not None}
-
-            existing_position = md.Allpositions.objects.filter(
-                user=broker.user,
-                broker=broker.brokername,
-                tradingsymbol=position_data.get('tradingsymbol')
-            ).first()
+                existing_position = md.Allpositions.objects.filter(
+                    user=broker.user,
+                    broker=broker.brokername,
+                    tradingsymbol=position_data.get('tradingsymbol')
+                ).last()
             
+                if existing_position:
 
+                    for key, value in position_data.items():
+                        setattr(existing_position, key, value)
+                    existing_position.save()
 
-            if existing_position:
+                    logger.info(f"Position updated via public API - Account: {accountnumber}, Symbol: {position_data.get('tradingsymbol')}")
 
-                for key, value in position_data.items():
-                    setattr(existing_position, key, value)
-                existing_position.save()
-                
-                logger.info(f"Position updated via public API - Account: {accountnumber}, Symbol: {position_data.get('tradingsymbol')}")
-                
-                return Response({
-                    "message": "Position updated successfully",
-                    "position_id": existing_position.id
-                }, status=status.HTTP_200_OK)
-            else:
+                    return Response({
+                        "message": "Position updated successfully",
+                        "position_id": existing_position.id
+                    }, status=status.HTTP_200_OK)
+                else:
 
-                position = md.Allpositions.objects.create(**position_data)
-                
-                logger.info(f"Position created via public API - Account: {accountnumber}, Symbol: {position_data.get('tradingsymbol')}")
-                
-                return Response({
-                    "message": "Position created successfully",
-                    "position_id": position.id
-                }, status=status.HTTP_201_CREATED)
+                    position = md.Allpositions.objects.create(**position_data)
+
+                    logger.info(f"Position created via public API - Account: {accountnumber}, Symbol: {position_data.get('tradingsymbol')}")
+
+                    return Response({
+                        "message": "Position created successfully",
+                        "position_id": position.id
+                    }, status=status.HTTP_201_CREATED)
             
         except Exception as e:
             logger.error(f"Error in PublicPositionDataAPI: {e}")
@@ -1231,9 +1229,9 @@ class publicholdingdata(GenericAPIView):
     def post(self, request):
         try:
             accountnumber = request.data.get('accountnumber')
-            auth_token = request.data.get('auth_token')
+            # auth_token = request.data.get('auth_token')
             
-            is_valid, broker, error_msg = verify_account_token(accountnumber, auth_token)
+            is_valid, broker, error_msg = verify_account_token(accountnumber)
             
             if not is_valid:
                 logger.warning(f"Unauthorized holdings data request: {error_msg}")
@@ -1241,48 +1239,51 @@ class publicholdingdata(GenericAPIView):
                     "message": error_msg,
                     "code": status.HTTP_401_UNAUTHORIZED
                 }, status=status.HTTP_401_UNAUTHORIZED)
+                
+            data = request.data.get('data')
+            for i in data:
 
-            holdings_data = {
-                'user': broker.user,
-                'broker': broker.brokername,
-                'nickname': broker.nickname,
-                'tradingsymbol': request.data.get('tradingsymbol'),
-                'quantity': request.data.get('quantity', 0),
-                'T1quantity': request.data.get('T1quantity', 0),
-                'averageprice': request.data.get('averageprice', 0),
-                'ltp': request.data.get('ltp', 0),
-                'profitandloss': request.data.get('profitandloss', 0),
-            }
+                holdings_data = {
+                    'user': broker.user,
+                    'broker': broker.brokername,
+                    'nickname': broker.nickname,
+                    'tradingsymbol': i.data.get('tradingsymbol'),
+                    'quantity': i.data.get('quantity', 0),
+                    'T1quantity': i.data.get('T1quantity', 0),
+                    'averageprice': i.data.get('averageprice', 0),
+                    'ltp': i.data.get('ltp', 0),
+                    'profitandloss': i.data.get('profitandloss', 0),
+                }
 
-            holdings_data = {k: v for k, v in holdings_data.items() if v is not None}
+            # holdings_data = {k: v for k, v in holdings_data.items() if v is not None}
             
-            existing_holding = md.allholding.objects.filter(
-                user=broker.user,
-                broker=broker.brokername,
-                tradingsymbol=holdings_data.get('tradingsymbol')
-            ).first()
-            
-            if existing_holding:
+                existing_holding = md.allholding.objects.filter(
+                    user=broker.user,
+                    broker=broker.brokername,
+                    tradingsymbol=holdings_data.get('tradingsymbol')
+                ).first()
 
-                for key, value in holdings_data.items():
-                    setattr(existing_holding, key, value)
-                existing_holding.save()
-                
-                logger.info(f"Holding updated via public API - Account: {accountnumber}, Symbol: {holdings_data.get('tradingsymbol')}")
-                
-                return Response({
-                    "message": "Holding updated successfully",
-                    "holding_id": existing_holding.id
-                }, status=status.HTTP_200_OK)
-            else:
-                holding = md.allholding.objects.create(**holdings_data)
-                
-                logger.info(f"Holding created via public API - Account: {accountnumber}, Symbol: {holdings_data.get('tradingsymbol')}")
-                
-                return Response({
-                    "message": "Holding created successfully",
-                    "holding_id": holding.id
-                }, status=status.HTTP_201_CREATED)
+                if existing_holding:
+
+                    for key, value in holdings_data.items():
+                        setattr(existing_holding, key, value)
+                    existing_holding.save()
+
+                    logger.info(f"Holding updated via public API - Account: {accountnumber}, Symbol: {holdings_data.get('tradingsymbol')}")
+
+                    return Response({
+                        "message": "Holding updated successfully",
+                        "holding_id": existing_holding.id
+                    }, status=status.HTTP_200_OK)
+                else:
+                    holding = md.allholding.objects.create(**holdings_data)
+
+                    logger.info(f"Holding created via public API - Account: {accountnumber}, Symbol: {holdings_data.get('tradingsymbol')}")
+
+                    return Response({
+                        "message": "Holding created successfully",
+                        "holding_id": holding.id
+                    }, status=status.HTTP_201_CREATED)
             
         except Exception as e:
             logger.error(f"Error in PublicHoldingsDataAPI: {e}")
@@ -1300,9 +1301,9 @@ class publicgetorderreq(GenericAPIView):
     def post(self, request):
         try:
             accountnumber = request.data.get('accountnumber')
-            auth_token = request.data.get('auth_token')
+            # auth_token = request.data.get('auth_token')
 
-            is_valid, broker, error_msg = verify_account_token(accountnumber, auth_token)
+            is_valid, broker, error_msg = verify_account_token(accountnumber)
             
             if not is_valid:
                 logger.warning(f"Unauthorized get orders request: {error_msg}")
@@ -1310,6 +1311,9 @@ class publicgetorderreq(GenericAPIView):
                     "message": error_msg,
                     "code": status.HTTP_401_UNAUTHORIZED
                 }, status=status.HTTP_401_UNAUTHORIZED)
+                
+            order_ids = request.data.get('order_ids') 
+            orderid_list = request.data.get('orderid_list')
         
             order_status = request.data.get('orderstatus')  
             days = request.data.get('days', 1)  
@@ -1321,6 +1325,16 @@ class publicgetorderreq(GenericAPIView):
                 user=broker.user,
                 updated_at__range=(start_time, end_time)
             )
+            if order_ids:
+                if isinstance(order_ids, str):
+                    order_ids = [int(x.strip()) for x in order_ids.split(',') if x.strip().isdigit()]
+                orders_qs = orders_qs.filter(id__in=order_ids)
+            
+            
+            if orderid_list:
+                if isinstance(orderid_list, str):
+                    orderid_list = [x.strip() for x in orderid_list.split(',') if x.strip()]
+                orders_qs = orders_qs.filter(orderid__in=orderid_list)
         
             if order_status:
                 orders_qs = orders_qs.filter(orderstatus=order_status)
@@ -1356,9 +1370,9 @@ class getpublicplaceorder(GenericAPIView):
     def get(self, request):
         try:
             accountnumber = request.GET.get('accountnumber')
-            auth_token = request.GET.get('auth_token')
+            # auth_token = request.GET.get('auth_token')
 
-            is_valid, broker, error_msg = verify_account_token(accountnumber, auth_token)
+            is_valid, broker, error_msg = verify_account_token(accountnumber)
             
             if not is_valid:
                 logger.warning(f"Unauthorized place order request: {error_msg}")
@@ -1404,9 +1418,9 @@ class getforlogs(GenericAPIView):
     def post(self, request):
         try:
             accountnumber = request.data.get('accountnumber')
-            auth_token = request.data.get('auth_token')
+            # auth_token = request.data.get('auth_token')
 
-            is_valid, broker, error_msg = verify_account_token(accountnumber, auth_token)
+            is_valid, broker, error_msg = verify_account_token(accountnumber)
             
             if not is_valid:
                 print(f"Unauthorized get logs request: {error_msg}")
