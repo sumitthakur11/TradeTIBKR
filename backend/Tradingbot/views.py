@@ -1401,13 +1401,15 @@ class getpublicplaceorder(GenericAPIView):
             
             
             
+        
             
+# @method_decorator(csrf_exempt, name='dispatch')           
 class getforlogs(GenericAPIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
         try:
-            accountnumber = request.data.get('accountnumber')
+            accountnumber = request.data.get('AUTH_KEY')
             # auth_token = request.data.get('auth_token')
 
             is_valid, broker, error_msg = verify_account_token(accountnumber)
@@ -1419,17 +1421,36 @@ class getforlogs(GenericAPIView):
                     "code": status.HTTP_401_UNAUTHORIZED
                 }, status=status.HTTP_401_UNAUTHORIZED)
             
-            if not os.path.exists(logpath):
-                print(f"Log file not found for account: {accountnumber}")
-                return Response({"message": "Log file not found"}, status=status.HTTP_404_NOT_FOUND)
-            try:
-                response = FileResponse(open(logpath, 'rb'), content_type='text/plain')
-                
-                response['Content-Disposition'] = f'attachment; filename="logs_{accountnumber}.log"'
-                return response
-            except Exception as e:
-                print(f"Error streaming log file: {e}")
-                return Response({"message": "Error reading log file"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            logpath= f"{path}/Botlogs/public/{broker.accountnumber}"
+            # print(request.data)
+            log_path = os.path.join(logpath, request.data.get('data')['filename'])
+            if not os.path.exists(log_path):
+                os.makedirs(os.path.dirname(log_path), exist_ok=True)
+            log_path= os.path.normpath(log_path)
+            with open(log_path, "w", encoding="utf-8") as f:
+                    f.write(request.data.get('data')['content'])
+                    f.close()
+            broker.filename= request.data.get('data')['filename']
+            broker.save()
+            
+            
+            ####################
+            
+            filename = os.path.basename(log_path)
+            filehandle = open(log_path,'rb')
+            responsehandle = FileResponse(filehandle, content_type = 'application/octet-stream')
+            responsehandle['Content-Disposition'] = f'attachment; filename="{filename}"'
+            
+            return responsehandle 
+
+
+
+            # return Response({"message": "file updated and created "}, status=status.HTTP_200_OK)
+            
+
+
+               
+           
             
         except Exception as e:
             print(f"Error in PublicGetLogsAPI: {e}")
@@ -1438,3 +1459,5 @@ class getforlogs(GenericAPIView):
                 "message": str(e),
                 "code": status.HTTP_400_BAD_REQUEST
             }, status=status.HTTP_400_BAD_REQUEST)
+            
+
