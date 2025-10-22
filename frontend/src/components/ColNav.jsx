@@ -91,6 +91,13 @@ const NavContent = ({ className = '' }) => {
               Funds
             </NavLink> */}
             <NavLink
+              to="/OrderRequest"
+              isActive={location.pathname === '/OrderRequest'}
+              onClick={() => handleLinkClick('/OrderRequest')}
+            >
+              Order Request
+            </NavLink>
+            <NavLink
               to="/NetPosition"
               isActive={location.pathname === '/NetPosition'}
               onClick={() => handleLinkClick('/NetPosition')}

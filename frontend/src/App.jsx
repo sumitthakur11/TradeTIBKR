@@ -13,6 +13,7 @@ import Angel from './components/Angelbroker';
 import Funds from './components/Funds';
 import Holdings from './components/Holdings';
 import Logs from './components/Logstable';
+import OrderRequest from './components/OrderRequest';
 import NetPosition from './components/NetPosition';
 
 
@@ -36,7 +37,7 @@ function App() {
               <Route path="/NetPosition" element={<NetPosition />} />
               <Route path="/Holdings" element={<Holdings />} />
               <Route path="/Logs" element={<Logs />} />
-              
+              <Route path="/OrderRequest" element={<OrderRequest />} />
             
             {/* <Route path="/Settings" element={<AddBroker />} /> */}
             <Route path="/ViewBroker" element={<ViewBroker defaultBrokerName="Shoonya" />} />
