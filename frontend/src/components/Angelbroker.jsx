@@ -14,6 +14,7 @@ import { MdDeleteForever } from "react-icons/md";
 import { MdModeEdit } from "react-icons/md";
  import {handleexchangerequest}  from '../utility/Api'
 import { Type } from "lucide-react";
+import { Host_Ip } from "../utility/Host";
 const Angel = () => {
   const [brokerName, setBrokerName] = useState('IBKR');
   const [apikey, setapikey] = useState("");
@@ -162,12 +163,30 @@ const handlelogin = async (brokerid) => {
 
   const handleDownloadLog = async (brokerid) => {
     try {
+        const sdd = localStorage.getItem("token");
+        const csrf = localStorage.getItem("csrf");
+      const t = "token " + sdd;
+
       const payload = JSON.stringify({ brokerid });
       const type = "POST";
       const endpoint = "v1/ibkr/downloadlog"; 
+
       
-      const response = await handleexchangerequest(type, payload, endpoint, true);
+      const response = await fetch(Host_Ip+ endpoint, {
+              method: type,
+              headers: {
+                "Content-Type": "application/json",
+                'X-CSRFToken':csrf,
       
+                Authorization: t,
+              },
+              body: payload,
+            });
+            if (!response.ok) {
+              alert('something went wrong hii 2')
+      
+              throw new Error("Login failed");
+            }
       if (!response.ok) {
         throw new Error('Failed to download log file');
       }

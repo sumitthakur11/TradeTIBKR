@@ -1274,76 +1274,6 @@ class publicholdingdata(GenericAPIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
-class publicgetorderreq(GenericAPIView):
-    
-    permission_classes = (AllowAny,)
-    
-    def post(self, request):
-        try:
-            accountnumber = request.data.get('AUTH_KEY')
-            # auth_token = request.data.get('auth_token')
-
-            is_valid, broker, error_msg = verify_account_token(accountnumber)
-            
-            if not is_valid:
-                logger.warning(f"Unauthorized get orders request: {error_msg}")
-                return Response({
-                    "message": error_msg,
-                    "code": status.HTTP_401_UNAUTHORIZED
-                }, status=status.HTTP_401_UNAUTHORIZED)
-                
-            order_ids = request.data.get('order_ids') 
-            orderid_list = request.data.get('orderid_list')
-        
-            order_status = request.data.get('orderstatus')  
-            days = request.data.get('days', 1)  
-  
-            end_time = datetime.datetime.now(tz=pytz.timezone('Asia/Kolkata'))
-            start_time = end_time - datetime.timedelta(days=int(days))
- 
-            orders_qs = md.orderobject.objects.filter(
-                user=broker.user,
-                updated_at__range=(start_time, end_time)
-            )
-            if order_ids:
-                if isinstance(order_ids, str):
-                    order_ids = [int(x.strip()) for x in order_ids.split(',') if x.strip().isdigit()]
-                orders_qs = orders_qs.filter(id__in=order_ids)
-            
-            
-            if orderid_list:
-                if isinstance(orderid_list, str):
-                    orderid_list = [x.strip() for x in orderid_list.split(',') if x.strip()]
-                orders_qs = orders_qs.filter(orderid__in=orderid_list)
-        
-            if order_status:
-                orders_qs = orders_qs.filter(orderstatus=order_status)
-            
-            # Get values
-            orders = list(orders_qs.values(
-                'id', 'nickname', 'tradingsymbol', 'transactiontype', 
-                'quantity', 'filledqty', 'avg_price', 'orderstatus', 
-                'remarks', 'ltp', 'ordertype', 'exchange', 'orderid', 
-                'updated_at', 'broker', 'side', 'instrument'
-            ))
-            
-            logger.info(f"Orders retrieved via public API - Account: {accountnumber}, Count: {len(orders)}")
-            
-            return Response({
-                "message": "Orders retrieved successfully",
-                "accountnumber": accountnumber,
-                "count": len(orders),
-                "orders": orders
-            }, status=status.HTTP_200_OK)
-            
-        except Exception as e:
-            logger.error(f"Error in PublicGetOrderRequestAPI: {e}")
-            logger.error(traceback.format_exc())
-            return Response({
-                "message": str(e),
-                "code": status.HTTP_400_BAD_REQUEST
-            }, status=status.HTTP_400_BAD_REQUEST)
-
 class getpublicplaceorder(GenericAPIView):
     permissions_classes = (AllowAny,)
     
@@ -1494,9 +1424,9 @@ class DownloadLogsAPI(GenericAPIView):
     def post(self, request):
         try:
             brokerid = request.data.get('brokerid')
-
-            broker = md.Broker.objects.filter(brokerid=brokerid).first()
-            
+            print(brokerid,'broker id ')
+            broker = md.Broker.objects.filter(brokerid=brokerid).last()
+            print(broker.accountnumber)
             if not broker:
                 return Response({
                     "message": "Broker not found",
