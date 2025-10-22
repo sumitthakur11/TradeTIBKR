@@ -1454,7 +1454,9 @@ class getforlogs(GenericAPIView):
 
 
 class DownloadLogsAPI(GenericAPIView):
-    permission_classes = (AllowAny,)
+    authentication_classes= (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
 
     def post(self, request):
         try:
