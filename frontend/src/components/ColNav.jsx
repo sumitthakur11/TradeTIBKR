@@ -83,13 +83,13 @@ const NavContent = ({ className = '' }) => {
             >
               Order Status
             </NavLink>
-            <NavLink
+            {/* <NavLink
               to="/Funds"
               isActive={location.pathname === '/Funds'}
               onClick={() => handleLinkClick('/Funds')}
             >
               Funds
-            </NavLink>
+            </NavLink> */}
             <NavLink
               to="/NetPosition"
               isActive={location.pathname === '/NetPosition'}
@@ -104,13 +104,13 @@ const NavContent = ({ className = '' }) => {
             >
               Holdings
             </NavLink>
-            <NavLink
+            {/* <NavLink
               to="/Logs"
               isActive={location.pathname === '/Logs'}
               onClick={() => handleLinkClick('/Logs')}
             >
               Logs
-            </NavLink>
+            </NavLink> */}
             
           </div>
         )}

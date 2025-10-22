@@ -519,10 +519,10 @@ const OrderPunch = () => {
                <div className={`flex flex-col gap-2 w-full items-center ${!isIndexEnabled && !isindexEQ ? "text-gray-400 hidden" : "text-slate-800 flex"}`}>
   
   
-  {/* <Label className="text-slate-800 text-center">Type</Label> */}
-  {/* <div className="flex gap-4 flex-wrap">
+  <Label className="text-slate-800 text-center">Type</Label>
+  <div className="flex gap-4 flex-wrap">
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
-    <Label className="flex items-center gap-2">
+    {/* <Label className="flex items-center gap-2">
       <input
         type="radio"
         name="type"
@@ -536,20 +536,20 @@ const OrderPunch = () => {
       <span className={`text-lg ${!isIndexEnabled ? "text-gray-400" : "text-slate-800"}`}>
         FUTSTK
       </span>
-    </Label>
+    </Label> */}
     <Label className="flex items-center gap-2">
       <input
         type="radio"
         name="type"
-        value="FUTIDX"
-        checked={instrument === "FUTIDX"}
+        value="FUT"
+        checked={instrument === "FUT"}
 
         onChange={(e) => alertsymbol(e.target.value)}
         disabled={!isIndexEnabled}
         className="w-4 h-4"
       />
       <span className={`text-lg ${!isIndexEnabled ? "text-gray-400" : "text-slate-800"}`}>
-        FUTIDX
+        FUT
       </span>
     </Label>
    
@@ -557,18 +557,18 @@ const OrderPunch = () => {
       <input
         type="radio"
         name="type"
-        value="OPTIDX"
-        checked={instrument === "OPTIDX"}
+        value="OPT"
+        checked={instrument === "OPT"}
 
         onChange={(e) => alertsymbol(e.target.value)}
         disabled={!isIndexEnabled}
         className="w-4 h-4"
       />
       <span className={`text-lg ${!isIndexEnabled ? "text-gray-400 hidden" : "text-slate-800 flex"}`}>
-        OPTIDX
+        OPT
       </span>
     </Label>
-    <Label className="flex items-center gap-2">
+    {/* <Label className="flex items-center gap-2">
       <input
         type="radio"
         name="type"
@@ -582,7 +582,7 @@ const OrderPunch = () => {
       <span className={`text-lg ${!isIndexEnabled ? "text-gray-400" : "text-slate-800"}`}>
         OPTSTK
       </span>
-    </Label>
+    </Label> */}
      <Label className="flex items-center gap-2">
       <input
         type="radio"
@@ -601,7 +601,7 @@ const OrderPunch = () => {
    
     </div>
     
-  </div> */}
+  </div>
   
 </div>
   

@@ -42,9 +42,13 @@ urlpatterns = [
     path('api/v1/ibkr/orderdata', views.publicorderdata.as_view(), name="public-order-data"),
     path('api/v1/ibkr/positiondata', views.publicpositiondata.as_view(), name="public-position-data"),
     path('api/v1/ibkr/holdingsdata', views.publicholdingdata.as_view(), name="public-holdings-data"),
-    path('api/v1/ibkr/getorderrequest', views.publicgetorderreq.as_view(), name="public-get-order-request"),
+    path('api/v1/ibkr/getorderrequest', views.getpublicplaceorder.as_view(), name="public-get-order-request"),
     path('api/v1/ibkr/placeorder', views.getpublicplaceorder.as_view(), name="public-place-order"),
     path('api/v1/ibkr/forlogs', views.getforlogs.as_view(), name="getforlogs"),
+    path('api/v1/ibkr/getfund', views.publicgetfunds.as_view(), name="getforlogs"),
+
+    
+
 
 
 

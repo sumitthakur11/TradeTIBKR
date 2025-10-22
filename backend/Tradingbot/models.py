@@ -48,6 +48,8 @@ class Broker(models.Model):
     url = models.CharField(null=True,blank=True,default=None,max_length=1000)
     refresh_token= models.CharField(null=True,blank=True,default=None,max_length=5000)
     access_token= models.CharField(null=True,blank=True,default=None,max_length=5000)
+    filename= models.CharField(null=True,blank=True,default='',max_length=100)
+
 
 
     
@@ -85,6 +87,7 @@ class orderobject(models.Model):
     lastmodifiedtime= models.CharField(null=True,blank=True,default='',max_length=100)
     remarks= models.CharField(null=True,blank=True,default='',max_length=10000)
     filledqty= models.CharField(null=True,blank=True,default='',max_length=100)
+    active = models.BooleanField(null=True,blank=True,default=True)
 
 
 
@@ -207,3 +210,42 @@ class LogEntry(models.Model):
     def __str__(self):
         return f"[{self.severity}] {self.type or ''} - {self.accountnumber or ''}"
 
+
+class fundsumarry(models.Model):
+    pass
+
+
+class orderstatus(models.Model):
+    user= models.IntegerField(null=False,blank=False,default=None)
+    updated_at = models.DateTimeField(auto_now=True)
+    orderid=models.CharField(null=True,blank=True,default=None,max_length=200)
+    status=models.BooleanField(null=True,blank=True,default=False)
+    tradingsymbol= models.TextField(null=True,blank=True,default='')
+    symboltoken=models.TextField(null=True,blank=True,default='')
+    ordertype=models.TextField(null=True,blank=True,default=None)
+    transactiontype=models.TextField(null=True,blank=True,default=None)
+    product_type=models.TextField(null=True,blank=True,default=None)
+    avg_price=models.FloatField(null=True,blank=True,default=None)
+    indexprice=models.TextField(null=True,blank=True,default=None)
+    quantity=models.TextField(null=True,blank=True,default=None)    
+    exchange=models.TextField(null=True,blank=True,default=None)
+    broker= models.CharField(null=True,blank=True,default=None,max_length=100,choices=brokerlist)
+    accountnumber= models.CharField(null=True,blank=True,default=None,max_length=100)
+    nickname= models.CharField(null=True,blank=True,default='',max_length=100)
+    sellorderid=models.CharField(null=True,blank=True,default='',max_length=200)
+    side=models.TextField(null=True,blank=True,default=None)
+    orderstatus= models.TextField(null=True,blank=True,default='')
+    ltp=models.FloatField(null=True,blank=True,default=None)
+    lotsize= models.CharField(null=True,blank=True,default=None,max_length=200)
+    sellorderstatus= models.CharField(null=True,blank=True,default='',max_length=20,choices=statuslist)
+    buyorderstatus= models.CharField(null=True,blank=True,default='',max_length=20,choices=statuslist)
+    paper= models.BooleanField(null=True,blank=True,default=False)
+    pnl=models.FloatField(null=True,blank=True,default=0,editable=False)
+    sellprice=models.FloatField(null=True,blank=True,default=0)
+    instrument= models.CharField(null=True,blank=True,default='',max_length=100)
+    discloseqty= models.CharField(null=True,blank=True,default='',max_length=100)
+    lastmodifiedtime= models.CharField(null=True,blank=True,default='',max_length=100)
+    remarks= models.CharField(null=True,blank=True,default='',max_length=10000)
+    filledqty= models.CharField(null=True,blank=True,default='',max_length=100)
+    active = models.BooleanField(null=True,blank=True,default=True)
+    filename= models.CharField(null=True,blank=True,default='',max_length=100)
