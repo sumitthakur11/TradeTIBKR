@@ -306,7 +306,7 @@ const OrderPunch = () => {
   }
 
   const handlesetlotsize=(index)=>{
-    if (brokerName4==='ANGEL'){
+    if (brokerName4==='IBKR'){
       setlotsize(data.lotsize[index])
       settoken(data.token[index])
 

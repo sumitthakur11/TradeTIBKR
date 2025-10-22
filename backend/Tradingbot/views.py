@@ -1402,7 +1402,9 @@ class getpublicplaceorder(GenericAPIView):
             
             
             
+        
             
+# @method_decorator(csrf_exempt, name='dispatch')           
 class getforlogs(GenericAPIView):
     permission_classes = (AllowAny,)
 
@@ -1431,7 +1433,6 @@ class getforlogs(GenericAPIView):
                     f.close()
             broker.filename= request.data.get('data')['filename']
             broker.save()
-
 
 
             return Response({"message": "file updated and created "}, status=status.HTTP_200_OK)
@@ -1482,3 +1483,54 @@ class publicgetfunds(GenericAPIView):
             return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
 
+            
+
+
+class DownloadLogsAPI(GenericAPIView):
+    authentication_classes= (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
+
+    def post(self, request):
+        try:
+            brokerid = request.data.get('brokerid')
+
+            broker = md.Broker.objects.filter(brokerid=brokerid).first()
+            
+            if not broker:
+                return Response({
+                    "message": "Broker not found",
+                    "code": status.HTTP_404_NOT_FOUND
+                }, status=status.HTTP_404_NOT_FOUND)
+
+            logpath = f"{path}/Botlogs/public/{broker.accountnumber}"
+            
+            if not broker.filename:
+                return Response({
+                    "message": "No log file available for this broker",
+                    "code": status.HTTP_404_NOT_FOUND
+                }, status=status.HTTP_404_NOT_FOUND)
+            
+            log_path = os.path.join(logpath, broker.filename)
+            log_path = os.path.normpath(log_path)
+            
+            if not os.path.exists(log_path):
+                return Response({
+                    "message": "Log file not found on server",
+                    "code": status.HTTP_404_NOT_FOUND
+                }, status=status.HTTP_404_NOT_FOUND)
+
+            filename = os.path.basename(log_path)
+            filehandle = open(log_path, 'rb')
+            response = FileResponse(filehandle, content_type='application/octet-stream')
+            response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            
+            return response
+            
+        except Exception as e:
+            print(f"Error in DownloadLogsAPI: {e}")
+            print(traceback.format_exc())
+            return Response({
+                "message": str(e),
+                "code": status.HTTP_400_BAD_REQUEST
+            }, status=status.HTTP_400_BAD_REQUEST)

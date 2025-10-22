@@ -9,8 +9,9 @@ import {
     SelectTrigger,
     SelectValue,
   } from "../components/ui/select"
-
-
+  import { LuDownload } from "react-icons/lu";
+import { MdDeleteForever } from "react-icons/md";
+import { MdModeEdit } from "react-icons/md";
  import {handleexchangerequest}  from '../utility/Api'
 import { Type } from "lucide-react";
 const Angel = () => {
@@ -38,7 +39,7 @@ const Angel = () => {
   const fetchaccountlist = async () => {
     const type = "GET";
     const endpoint = "loadaccount";
-    const payload = "broker=ANGEL";
+    const payload = "broker=IBKR";
     setLoading(true); // Set loading to true before fetching data
     handleexchangerequest(type, payload, endpoint, false)
       .then((response) => {
@@ -159,6 +160,43 @@ const handlelogin = async (brokerid) => {
   };
 
 
+  const handleDownloadLog = async (brokerid) => {
+    try {
+      const payload = JSON.stringify({ brokerid });
+      const type = "POST";
+      const endpoint = "v1/ibkr/downloadlog"; 
+      
+      const response = await handleexchangerequest(type, payload, endpoint, true);
+      
+      if (!response.ok) {
+        throw new Error('Failed to download log file');
+      }
+
+      const content = response.headers.get('Content-Disposition');
+      let filename = `broker_${brokerid}.log`;
+      if (content) {
+        const filenameMatch = content.match(/filename="(.+)"/);
+        if (filenameMatch) {
+          filename = filenameMatch[1];
+        }
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      } catch (error) 
+      {
+      console.error("Error downloading log file:", error);
+      alert("Failed to download log file");
+    }
+  }
+
+
   return (
     <div className="container mx-auto p-6 bg-gray-100 rounded-lg shadow-md max-w-7xl">
       <h1 className="text-2xl font-bold text-blue-800 mb-6">Add Broker</h1>
@@ -255,6 +293,7 @@ const handlelogin = async (brokerid) => {
                   <th   className="px-6 py-3"> Active</th>
                   <th className="px-6 py-3">Edit</th>
                   <th className="px-6 py-3">Delete</th>
+                  <th className="px-6 py-3">Download</th>
                 </tr>
               </thead>
               <tbody>
@@ -273,7 +312,7 @@ const handlelogin = async (brokerid) => {
       ))}
                     <td className="px-6 py-4 text-center">
                       <Button
-                        className="bg-blue-600 text-white py-2 text-sm rounded-md hover:bg-blue-700"
+                        className={`bg-blue-600 text-white py-2 text-sm rounded-md hover:bg-blue-700 ${row.active ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
                         onClick={() => handleactivebroker(row.brokerid)}
                       >
                         {row.active?"Deactivate":"Activate"}
@@ -285,15 +324,24 @@ const handlelogin = async (brokerid) => {
                         className="bg-blue-600 text-white py-2 text-sm rounded-md hover:bg-blue-700"
                         onClick={() => handleEdit(index)}
                       >
-                        Edit
+                        Edit <MdModeEdit />
+
                       </Button>
                     </td>
                     <td className="px-6 py-4 text-center">
                       <Button
-                        className="bg-blue-600 text-white py-2 text-sm rounded-md hover:bg-blue-700"
+                        className="bg-red-600/95 text-white py-2 text-sm rounded-md hover:bg-red-700"
                         onClick={() => handleadelete(row.brokerid)}
                       >
-                        Delete
+                        Delete <MdDeleteForever />
+                      </Button>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <Button
+                        className="bg-green-600 text-white py-2 text-sm rounded-md hover:bg-green-700"
+                        onClick={() => handleDownloadLog (row.brokerid)}
+                      >
+                        Download <LuDownload />
                       </Button>
                     </td>
                   </tr>
