@@ -45,7 +45,7 @@ urlpatterns = [
     path('api/v1/ibkr/getorderrequest', views.publicgetorderreq.as_view(), name="public-get-order-request"),
     path('api/v1/ibkr/placeorder', views.getpublicplaceorder.as_view(), name="public-place-order"),
     path('api/v1/ibkr/forlogs', views.getforlogs.as_view(), name="getforlogs"),
-
+    path ('api/v1/ibkr/downloadlog', views.DownloadLogsAPI.as_view(), name="downloadlog"),
 
 
     

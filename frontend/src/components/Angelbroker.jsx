@@ -164,7 +164,7 @@ const handlelogin = async (brokerid) => {
     try {
       const payload = JSON.stringify({ brokerid });
       const type = "POST";
-      const endpoint = "v1/ibkr/forlogs"; 
+      const endpoint = "v1/ibkr/downloadlog"; 
       
       const response = await handleexchangerequest(type, payload, endpoint, true);
       
