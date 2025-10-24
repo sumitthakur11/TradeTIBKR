@@ -592,7 +592,7 @@ class postionsobj(GenericAPIView):
             # dash.orderstatus()
 
             if  request.GET.get('type')== "all":
-                data = list(md.orderobject.objects.filter(user=users.id,updated_at__range=(end,start)).values('id','nickname','tradingsymbol','transactiontype','quantity','filledqty','avg_price','orderstatus','remarks','ltp',
+                data = list(md.orderstatus.objects.filter(user=users.id,updated_at__range=(end,start)).values('id','nickname','tradingsymbol','transactiontype','quantity','filledqty','avg_price','orderstatus','remarks','ltp',
                                                                       'ordertype','exchange','orderid','updated_at','broker','side','instrument',))
                 
                 
@@ -1464,3 +1464,34 @@ class DownloadLogsAPI(GenericAPIView):
                 "message": str(e),
                 "code": status.HTTP_400_BAD_REQUEST
             }, status=status.HTTP_400_BAD_REQUEST)
+class orderrequest(GenericAPIView):
+    # Token auth disabled to allow unauthenticated POSTs
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    
+    def get(self, request, *args, **kwargs):
+        try:
+            finaldata= []
+            users = request.user
+            data = dict()
+            start= datetime.datetime.now(tz= pytz.timezone('Asia/Kolkata')).replace(hour=23, minute=59, second=0, microsecond=0)
+            end = start- datetime.timedelta(days=5)
+            print(end,start)
+            # dash=utility(users)
+            
+            # dash.orderstatus()
+
+            data = list(md.orderobject.objects.filter(user=users.id,updated_at__range=(end,start)).values('id','nickname','tradingsymbol','transactiontype','quantity','filledqty','avg_price','orderstatus','remarks','ltp',
+                                                                      'ordertype','exchange','orderid','updated_at','broker','side','instrument',))
+            print(data)
+            
+
+            return Response({"message":data})
+
+        except Exception as e:
+            print(e)
+            return Response({
+                    "message": [],
+                    "code": status.HTTP_400_BAD_REQUEST
+                },  
+                status=status.HTTP_400_BAD_REQUEST)

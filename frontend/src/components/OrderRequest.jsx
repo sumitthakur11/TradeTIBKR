@@ -85,7 +85,7 @@ const paginationModel = { page: 0, pageSize: 10 };
     setLoading(true);
     try {
       const type = "GET";
-      const endpoint = "position"; // Replace with your API endpoint
+      const endpoint = "orderrequest"; // Replace with your API endpoint
       const payload = "type="+t; // Example payload
       const response = await handleexchangerequest(type, payload, endpoint, false);
       if (response) {
@@ -204,7 +204,7 @@ const handleModify = (row) => {
         <p>Refresh</p>
 
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Order Book" className='text-slate-900 font-bold' {...a11yProps(0)} />
+          <Tab label="Order Requests" className='text-slate-900 font-bold' {...a11yProps(0)} />
           {/* <Tab label="Open Position"className='text-slate-900 font-bold' {...a11yProps(1)} />
           <Tab label="Close Position"className='text-slate-900 font-bold' {...a11yProps(2)} /> */}
         </Tabs>
@@ -212,12 +212,12 @@ const handleModify = (row) => {
       
 
       <CustomTabPanel value={value} index={0}>
-        <span>Order Book</span>
+        <span>Order Requests</span>
         
         
         {/* Render the Select component only when the "Order Book" tab is selected */}
         <div className='flex flex-wrap items-center justify-around gap-4'>
-              <Button color="primary" className="p-3 bg-cyan-700/85" onClick = {() => DownloadCSVFromJSON(filtereddata,"orderbook.csv")}>
+              <Button color="primary" className="p-3 bg-cyan-700/85" onClick = {() => DownloadCSVFromJSON(filtereddata,"orderrequest.csv")}>
                   Download
                 </Button>
         
@@ -259,7 +259,7 @@ const handleModify = (row) => {
           
           <div className='container flex items-end gap-2 flex-col  mx-auto mt-6 p-6 bg-trasparent rounded-lg max-w-6xl'>
 
-            <Button onClick={()=>handlecancelorder()} className=" bg-red-600/95">Cancel </Button>
+            {/* <Button onClick={()=>handlecancelorder()} className=" bg-red-600/95">Cancel </Button> */}
             
              <Paper sx={{ height: '100%', width: '100%' }}>
               
@@ -279,20 +279,20 @@ const handleModify = (row) => {
 
     
     
-    {
+    // {
   
   
-      field: 'Modify',
-      headerName: 'Modify',
-      // flex: 1, // Adjust column width
-      width:150,
-      renderCell: (params) =>(
+    //   field: 'Modify',
+    //   headerName: 'Modify',
+    //   // flex: 1, // Adjust column width
+    //   width:150,
+    //   renderCell: (params) =>(
     
-        <Button   color="primary" className="p-3 bg-teal-700/85" onClick={() => handleModify(params.row)}>
-          Modify
-        </Button>
-      )
-    } 
+    //     <Button   color="primary" className="p-3 bg-teal-700/85" onClick={() => handleModify(params.row)}>
+    //       Modify
+    //     </Button>
+    //   )
+    // } 
     
     
     

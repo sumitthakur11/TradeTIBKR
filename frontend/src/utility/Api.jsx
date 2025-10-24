@@ -54,7 +54,7 @@ export const handleexchangerequest = async (type, payload, endpoint,okalert) => 
         body: payload,
       });
       if (!response.ok) {
-        alert('something went wrong hii 2')
+        alert('something went wrong')
 
         throw new Error("Login failed");
       }
